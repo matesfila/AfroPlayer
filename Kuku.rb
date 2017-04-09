@@ -1,7 +1,32 @@
+
+#################################################################
+#Používateľská časť - definujú sa tu vlastnosti rytmu a patterny#
+#################################################################
+
 BPM = 100
 HUMANIZE_TIME = 0.01
 HUMANIZE_DYNAMIC = 0.3
 HUMANIZE_PITCH = 0.005
+
+kuku_pattern_dundun_base = Array.new(12, "b-bX-bb-|b-b-A-b-") + ["bX-X-bb-|b-b-A-b-"]
+kuku_pattern_sangban_base = ["X-b-b-X-|X-b-b-X-"]
+kuku_pattern_kenken_base = ["X-b-X-b-|X-b-X-b-"]
+kuku_pattern_dundun_variations =
+  Array.new(4, "b-bX-bb-|X-bX-bX-") +
+  Array.new(8, "b-AX-AX-|AX-AX-X-") +
+  Array.new(2, "b-bX-bb-|X-XX-XX-") +
+  Array.new(8, "B-BB-BB-|C-CC-CC-") +
+  Array.new(2, "X-bX-bB-|X-XX-XX-|XX-X-XX-|XX-XXXX-")
+
+
+dundunBasePatterns = kuku_pattern_dundun_base
+dundunVariations = kuku_pattern_dundun_variations
+sangbanBasePatterns = kuku_pattern_sangban_base
+kenkenBasePatterns = kuku_pattern_kenken_base
+
+#############################################
+#Systémová časť (bežne sa do nej nezasahuje)#
+#############################################
 
 QUARTER_NOTE = 0.5
 EIGHT_NOTE = 0.25
@@ -47,7 +72,7 @@ end
 
 define :play_ken do |s = 0, p = 1|
   if rand <= p
-    play_sample(:drum_tom_hi_hard, s, 2.4, -0.3, 1)
+    play_sample(:drum_tom_hi_hard, s, 2.4, -0.3, 1.6)
     return true
   else
     sleep s
@@ -68,7 +93,7 @@ define :play_dun_pattern do |pattern|
       play_dun
       play_bell_dun(EIGHT_NOTE)
     when c == 'A'
-      play_dun(0, 0.15)
+      play_dun(0, 0.09)
       play_bell_dun(EIGHT_NOTE)
     when c == 'B'
       play_dun(0, 0.4)
@@ -114,87 +139,50 @@ define :play_ken_pattern do |pattern|
   }
 end
 
-
-define :kuku_pattern_dundun_base do
-  if one_in(5)
-    play_dun_pattern("bX-X-bb-|b-b-B-b-")
-  else
-    play_dun_pattern("b-bX-bb-|b-b-B-b-")
-  end
-end
-
-define :kuku_pattern_sangban_base do
-  play_san_pattern("X-b-b-X-|X-b-b-X-")
-end
-
-define :kuku_pattern_kenken_base do
-  play_ken_pattern("X-b-X-b-|X-b-X-b-")
-end
-
-define :kuku_pattern_dundun_var1 do
-  play_dun_pattern("b-bX-bb-|X-bX-bX-")
-end
-
-define :kuku_pattern_dundun_var2 do
-  play_dun_pattern("b-bX-bb-|X-XX-XX-")
-end
-
-define :kuku_pattern_dundun_var3 do
-  play_dun_pattern("B-BB-BB-|C-CC-CC-")
-end
-
-define :kuku_pattern_dundun_var4 do
-  play_dun_pattern("X-bX-bB-|X-XX-XXX")
-  #cue :tick
-  play_dun_pattern("X-XXX-XX|-XXX-X-X")
-end
-
-in_thread(name: :synchronizer) do
-  loop do
-    cue :tick
-    play_dun_pattern("--------|--------")
-  end
-end
-
-in_thread(name: :dundun) do
-  
-  loop do
-    (dice(2) - 1).times do
-      #0.times do
-      kuku_pattern_dundun_base
-      kuku_pattern_dundun_base
-      kuku_pattern_dundun_base
-      kuku_pattern_dundun_base
+define :start_synchronizer do
+  in_thread(name: :synchronizer) do
+    loop do
+      cue :tick
+      sleep QUARTER_NOTE * 8
     end
+  end
+end
+
+define :start_dundun do
+  in_thread(name: :dundun) do
     
-    t = dice(6)
-    case
-    when t == 1
-      kuku_pattern_dundun_base
-      kuku_pattern_dundun_var1
-    when t == 2
-      kuku_pattern_dundun_base
-      kuku_pattern_dundun_var2
-    when t >= 3 && t <= 5
-      kuku_pattern_dundun_base
-      kuku_pattern_dundun_var3
-    else
-      kuku_pattern_dundun_base
-      kuku_pattern_dundun_base
-      kuku_pattern_dundun_var4
+    loop do
+      #((dice(2) - 1)*4).times do
+      1.times do
+        play_dun_pattern(dundunBasePatterns.choose)
+      end
+      
+      if (dundunVariations.size > 0)
+        t = dice(dundunVariations.size)
+        play_dun_pattern(dundunVariations[t - 1])
+      end
+      
     end
-    
   end
 end
 
-in_thread(name: :sangban) do
-  loop do
-    kuku_pattern_sangban_base
+define :start_sangban do
+  in_thread(name: :sangban) do
+    loop do
+      play_san_pattern(sangbanBasePatterns.choose)
+    end
   end
 end
 
-in_thread(name: :kenken) do
-  loop do
-    kuku_pattern_kenken_base
+define :start_kenken do
+  in_thread(name: :kenken) do
+    loop do
+      play_ken_pattern(kenkenBasePatterns.choose)
+    end
   end
 end
+
+start_synchronizer
+start_dundun
+start_sangban
+start_kenken
