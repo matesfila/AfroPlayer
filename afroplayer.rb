@@ -7,14 +7,14 @@ HUMANIZE_TIME = 0.01
 HUMANIZE_DYNAMIC = 0.3
 HUMANIZE_PITCH = 0.005
 
-DUNDUN = {"sample" => :drum_tom_lo_hard, "amp" => 2.4, "rate" => 0.85, "pan" => -0.4}
-DUNDUN_BELL = {"sample" => :drum_cowbell, "amp" => 1, "rate" => 0.7, "pan" => -0.4}
+DUNDUN = {"sample" => :drum_tom_lo_hard, "amp" => 2.4, "rate" => 0.85, "pan" => -0.5}
+DUNDUN_BELL = {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 0.7, "pan" => -0.4}
 
-SANGBAN = {"sample" => :drum_tom_mid_hard, "amp" => 1, "rate" => 1, "pan" => 0.4}
-SANGBAN_BELL = {"sample" => :drum_cowbell, "amp" => 0.8, "rate" => 1.18, "pan" => 0.4}
+SANGBAN = {"sample" => :drum_tom_mid_hard, "amp" => 1.3, "rate" => 1, "pan" => 0.5}
+SANGBAN_BELL = {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.18, "pan" => 0.4}
 
-KENKEN = {"sample" => :drum_tom_hi_hard, "amp" => 1, "rate" => 1.6, "pan" => 0}
-KENKEN_BELL = {"sample" => :drum_cowbell, "amp" => 0.8, "rate" => 1.8, "pan" => 0}
+KENKEN = {"sample" => :drum_tom_hi_soft, "amp" => 4, "rate" => 1.8, "pan" => 0}
+KENKEN_BELL = {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.8, "pan" => 0}
 
 
 ####################################################
@@ -85,6 +85,10 @@ define :playPattern do |pattern: "", drum: {}, bell: {}|
   }
 end
 
+define :patternSize do |pattern|
+  return pattern.delete("|").length()
+end
+
 define :playTrack do |trackName: "", drum: {}, bell: {}, basePatterns: [], variations: []|
   in_thread(name: trackName) do
     
@@ -94,18 +98,25 @@ define :playTrack do |trackName: "", drum: {}, bell: {}, basePatterns: [], varia
       #((dice(2) - 1)*4).times do
       
       x = 0
-      t = 0
+      t = -1
       if (variations.size > 0)
-        t = dice(variations.size)
-        x = 1
+        #t = aká variácia sa bude hrať, náhodný výber
+        t = dice(variations.size) - 1
+        
+        #x = koľkokrát sa základný pattern nachádza vo variácii (velkosť variácie...)
+        #variácia nemôže byť menšia ako velkosť base patternu
+        #basePatterns musia mat vsetky rovnaku velkost
+        x = patternSize(variations[t]) / patternSize(basePatterns[0])
       end
       
+      #základný pattern sa zahrá príslušný počet krát
       (@VARCYCLE_LEN - x).times do
         playPattern(pattern: basePatterns.choose, drum: drum, bell: bell)
       end
       
-      if t > 0
-        playPattern(pattern: variations[t - 1], drum: drum, bell: bell)
+      #a na záver cyklu sa zahrá variácia
+      if t >= 0
+        playPattern(pattern: variations[t], drum: drum, bell: bell)
       end
       
     end
@@ -117,7 +128,7 @@ define :start_dundun do
 end
 
 define :start_sangban do
-  playTrack(trackName: "sangbanTrack", drum: SANGBAN, bell: SANGBAN_BELL, basePatterns: @sangbanBasePatterns, variations: [])
+  playTrack(trackName: "sangbanTrack", drum: SANGBAN, bell: SANGBAN_BELL, basePatterns: @sangbanBasePatterns, variations: @sangbanVariations)
 end
 
 define :start_kenken do
@@ -141,14 +152,17 @@ define :playWholeSong do
   end
 end
 
+playWholeSong()
+
 =begin
 TODO
 OK - nejako refaktornúť funkcie na prehranie patternu, aby algoritmus bol rovnaký pre dundun aj sangban aj kenken
 OK - doplniť možnosť konfigurovať ako často sa bude hrať variácia
 OK - vytvoriť sampler: podobne ako sa zadávajú patterny ako text, môže sa tak vytvoriť aj sampler, tj. konkrétny hudobný nástroj
-- počítať automaticky dĺžku variácie k dĺžke jedného cyklu a zahrať variáciu vždy na konci cyklu
+OK - počítať automaticky dĺžku variácie k dĺžke jedného cyklu a zahrať variáciu vždy na konci cyklu
 - implementovať swing feeling
 
+- inteligentnejší sampler: náhodné sample, vrstvy pre rôzne dynamiky
 - zamysleť sa nad notáciou, aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
 - implementovať spoločné variácie pre sangban a dundun
 - implementovať djembe

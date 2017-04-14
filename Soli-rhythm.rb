@@ -11,13 +11,16 @@
 
 @VARCYCLE_LEN=4
 
-@rhythmTime = [24,8] #dvadsaťštyry osminový rytmus
+@rhythmTime = [12,8] #dvanásť osminový rytmus
 
-@dundunBasePatterns = Array.new(1, "X bb bb XX X|X bb bb XX X")
-@dundunVariations = ["X X XXXX XXX| XX X X XX X"]
+@dundunBasePatterns = Array.new(1, "X bb bb XX X")
+@dundunVariations =
+  #["X X XXXX XXX| XX X X XX X"] +
+  ["X bb bb b XX| X X X bXX X"] +
+  #["X bb bX XX X"] +
+  []
 
-@sangbanBasePatterns = ["X b b b bX b|X b b b bX b"]
+@sangbanBasePatterns = ["X b b b bX b"]
+@sangbanVariations = ["X X X X bX b"]
 
-@kenkenBasePatterns = [" bb XX bb XX| bb XX bb XX"]
-
-playWholeSong()
+@kenkenBasePatterns = [" bb XX bb XX"]
