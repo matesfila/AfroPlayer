@@ -7,10 +7,19 @@ HUMANIZE_TIME = 0.01
 HUMANIZE_DYNAMIC = 0.3
 HUMANIZE_PITCH = 0.005
 
+DUNDUN = {"sample" => :drum_tom_lo_hard, "amp" => 2.4, "rate" => 0.85, "pan" => -0.4}
+DUNDUN_BELL = {"sample" => :drum_cowbell, "amp" => 1, "rate" => 0.7, "pan" => -0.4}
 
-#############################################
-#Systémová časť (bežne sa do nej nezasahuje)#
-#############################################
+SANGBAN = {"sample" => :drum_tom_mid_hard, "amp" => 1, "rate" => 1, "pan" => 0.4}
+SANGBAN_BELL = {"sample" => :drum_cowbell, "amp" => 0.8, "rate" => 1.18, "pan" => 0.4}
+
+KENKEN = {"sample" => :drum_tom_hi_hard, "amp" => 1, "rate" => 1.6, "pan" => 0}
+KENKEN_BELL = {"sample" => :drum_cowbell, "amp" => 0.8, "rate" => 1.8, "pan" => 0}
+
+
+####################################################
+#Systémová časť - core (bežne sa do nej nezasahuje)#
+####################################################
 
 
 define :countNoteDelay do |note|
@@ -23,130 +32,61 @@ define :countNoteDelay do |note|
   end
 end
 
+DELAY = countNoteDelay(@rhythmTime[1])
 
 define :rand_around do |v,r|
   return rrand(v-r, v+r)
 end
 
-
-define :play_sample do |sample, time, amp, pan, rate|
+define :playSample do |sample: '', sleep: 0, amp: 1, pan: 1, rate: 1, probability: 1|
   use_bpm @BPM
-  sample sample, amp: rand_around(amp, HUMANIZE_DYNAMIC), pan: pan, rate: rand_around(rate, HUMANIZE_PITCH)
-  sleep rand_around(time, HUMANIZE_TIME)
-end
-
-define :play_dun do |s = 0, p = 1|
-  if rand <= p
-    play_sample(:drum_tom_lo_hard, s, 2.4, -0.3, 0.85)
+  
+  if rand <= probability
+    sample sample, amp: rand_around(amp, HUMANIZE_DYNAMIC), pan: pan, rate: rand_around(rate, HUMANIZE_PITCH)
+    sleep rand_around(sleep, HUMANIZE_TIME)
     return true
   else
-    sleep s
+    sleep sleep
     return false
   end
 end
 
-define :play_bell_dun do |s|
-  play_sample(:drum_cowbell, s, 1, -0.3, 0.7)
+define :playInstrument do |instrument: {}, sleep: 0, probability: 1|
+  return playSample(sample: instrument["sample"], sleep: sleep, amp: instrument["amp"], pan: instrument["pan"], rate: instrument["rate"], probability: probability)
 end
 
-define :play_san do |s = 0, p = 1|
-  if rand <= p
-    play_sample(:drum_tom_mid_hard, s, 2.4, -0.3, 1)
-    return true
-  else
-    sleep s
-    return false
-  end
-end
-
-define :play_bell_san do |s|
-  play_sample(:drum_cowbell, s, 0.8, 0.3, 1.18)
-end
-
-define :play_ken do |s = 0, p = 1|
-  if rand <= p
-    play_sample(:drum_tom_hi_hard, s, 2.4, -0.3, 1.6)
-    return true
-  else
-    sleep s
-    return false
-  end
-end
-
-define :play_bell_ken do |s|
-  play_sample(:drum_cowbell, s, 0.8, 0.3, 1.8)
-end
-
-
-define :play_dun_pattern do |pattern|
+define :playPattern do |pattern: "", drum: {}, bell: {}|
   sync :tick
   use_bpm @BPM
   pattern.each_char { |c|
     case
     when c == 'X'
-      play_dun
-      play_bell_dun(countNoteDelay(@rhythmTime[1]))
+      playInstrument(instrument: drum, probability: 1)
+      playInstrument(instrument: bell)
+      sleep DELAY
     when c == 'A'
-      play_dun(0, 0.09)
-      play_bell_dun(countNoteDelay(@rhythmTime[1]))
+      playInstrument(instrument: drum, probability: 0.09)
+      playInstrument(instrument: bell)
+      sleep DELAY
     when c == 'B'
-      play_dun(0, 0.4)
-      play_bell_dun(countNoteDelay(@rhythmTime[1]))
+      playInstrument(instrument: drum, probability: 0.4)
+      playInstrument(instrument: bell)
+      sleep DELAY
     when c == 'C'
-      play_dun(0, 0.8)
-      play_bell_dun(countNoteDelay(@rhythmTime[1]))
+      playInstrument(instrument: drum, probability: 0.8)
+      playInstrument(instrument: bell)
+      sleep DELAY
     when c == 'b'
-      play_bell_dun(countNoteDelay(@rhythmTime[1]))
-    when c == '-'
-      sleep countNoteDelay(@rhythmTime[1])
+      playInstrument(instrument: bell)
+      sleep DELAY
+    when c == '-' || c == ' '
+      sleep DELAY
     end
   }
 end
 
-define :play_san_pattern do |pattern|
-  sync :tick
-  use_bpm @BPM
-  pattern.each_char { |c|
-    case
-    when c == 'X'
-      play_san
-      play_bell_san(countNoteDelay(@rhythmTime[1]))
-    when c == 'b'
-      play_bell_san(countNoteDelay(@rhythmTime[1]))
-    when c == '-'
-      sleep countNoteDelay(@rhythmTime[1])
-    end
-  }
-end
-
-define :play_ken_pattern do |pattern|
-  sync :tick
-  use_bpm @BPM
-  pattern.each_char { |c|
-    case
-    when c == 'X'
-      play_ken
-      play_bell_ken(countNoteDelay(@rhythmTime[1]))
-    when c == 'b'
-      play_bell_ken(countNoteDelay(@rhythmTime[1]))
-    when c == '-'
-      sleep countNoteDelay(@rhythmTime[1])
-    end
-  }
-end
-
-define :start_synchronizer do
-  use_bpm @BPM
-  in_thread(name: :synchronizer) do
-    loop do
-      cue :tick
-      sleep countNoteDelay(@rhythmTime[1]) * @rhythmTime[0]
-    end
-  end
-end
-
-define :start_dundun do
-  in_thread(name: :dundun) do
+define :playTrack do |trackName: "", drum: {}, bell: {}, basePatterns: [], variations: []|
+  in_thread(name: trackName) do
     
     loop do
       use_bpm @BPM
@@ -154,51 +94,38 @@ define :start_dundun do
       #((dice(2) - 1)*4).times do
       
       x = 0
-      if (@dundunVariations.size > 0)
-        t = dice(@dundunVariations.size)
+      t = 0
+      if (variations.size > 0)
+        t = dice(variations.size)
         x = 1
       end
       
       (@VARCYCLE_LEN - x).times do
-        play_dun_pattern(@dundunBasePatterns.choose)
+        playPattern(pattern: basePatterns.choose, drum: drum, bell: bell)
       end
       
       if t > 0
-        play_dun_pattern(@dundunVariations[t - 1])
+        playPattern(pattern: variations[t - 1], drum: drum, bell: bell)
       end
-      
       
     end
   end
+end
+
+define :start_dundun do
+  playTrack(trackName: "dundunTrack", drum: DUNDUN, bell: DUNDUN_BELL, basePatterns: @dundunBasePatterns, variations: @dundunVariations)
 end
 
 define :start_sangban do
-  in_thread(name: :sangban) do
-    loop do
-      use_bpm @BPM
-      play_san_pattern(@sangbanBasePatterns.choose)
-    end
-  end
+  playTrack(trackName: "sangbanTrack", drum: SANGBAN, bell: SANGBAN_BELL, basePatterns: @sangbanBasePatterns, variations: [])
 end
 
 define :start_kenken do
-  in_thread(name: :kenken) do
-    loop do
-      use_bpm @BPM
-      play_ken_pattern(@kenkenBasePatterns.choose)
-    end
-  end
-end
-
-define :playWholeSong_old do
-  start_synchronizer
-  start_dundun
-  start_sangban
-  start_kenken
+  playTrack(trackName: "kenkenTrack", drum: KENKEN, bell: KENKEN_BELL, basePatterns: @kenkenBasePatterns, variations: [])
 end
 
 define :playWholeSong do
-  live_loop :xxx do
+  live_loop :songLoop do
     cue :tick
     if @PLAY_DUNDUN
       start_dundun
@@ -210,19 +137,19 @@ define :playWholeSong do
       start_kenken
     end
     use_bpm @BPM
-    sleep countNoteDelay(@rhythmTime[1]) * @rhythmTime[0]
+    sleep DELAY * @rhythmTime[0]
   end
 end
 
 =begin
 TODO
-- doplniť možnosť konfigurovať ako často sa bude hrať variácia
-- počítať automaticky dĺžku variácie k dĺžke jedného cyklu a zahrať
-variáciu vždy na konci cyklu
-- implementovať spoločné variácie pre sangban a dundun
-- nejako refaktornúť funkcie na prehranie patternu, aby algoritmus bol rovnaký pre dundun aj sangban aj kenken
-- vytvoriť sampler: podobne ako sa zadávajú patterny ako text, môže sa tak vytvoriť aj sampler, tj. konkrétny hudobný nástroj
-- zamysleť sa nad notáciou, aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
+OK - nejako refaktornúť funkcie na prehranie patternu, aby algoritmus bol rovnaký pre dundun aj sangban aj kenken
+OK - doplniť možnosť konfigurovať ako často sa bude hrať variácia
+OK - vytvoriť sampler: podobne ako sa zadávajú patterny ako text, môže sa tak vytvoriť aj sampler, tj. konkrétny hudobný nástroj
+- počítať automaticky dĺžku variácie k dĺžke jedného cyklu a zahrať variáciu vždy na konci cyklu
 - implementovať swing feeling
+
+- zamysleť sa nad notáciou, aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
+- implementovať spoločné variácie pre sangban a dundun
 - implementovať djembe
 =end
