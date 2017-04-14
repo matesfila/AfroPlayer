@@ -14,7 +14,7 @@ HUMANIZE_PITCH = 0.005
 
 
 define :countNoteDelay do |note|
-#definuje dĺžku sleepu: pre štvrťové rytmy sa hrajú šestnástinové noty, pre trojkové sa hrajú osminové
+  #definuje dĺžku sleepu: pre štvrťové rytmy sa hrajú šestnástinové noty, pre trojkové sa hrajú osminové
   case
   when note == 4
     return 1.0 / 2 / 2 #štvrťová nota na polovicu a na polovicu = šestnástinová nota
@@ -152,14 +152,21 @@ define :start_dundun do
       use_bpm @BPM
       
       #((dice(2) - 1)*4).times do
-      3.times do
+      
+      x = 0
+      if (@dundunVariations.size > 0)
+        t = dice(@dundunVariations.size)
+        x = 1
+      end
+      
+      (@VARCYCLE_LEN - x).times do
         play_dun_pattern(@dundunBasePatterns.choose)
       end
       
-      if (@dundunVariations.size > 0)
-        t = dice(@dundunVariations.size)
+      if t > 0
         play_dun_pattern(@dundunVariations[t - 1])
       end
+      
       
     end
   end
@@ -193,10 +200,29 @@ end
 define :playWholeSong do
   live_loop :xxx do
     cue :tick
-    start_dundun
-    start_sangban
-    start_kenken
+    if @PLAY_DUNDUN
+      start_dundun
+    end
+    if @PLAY_SANGBAN
+      start_sangban
+    end
+    if @PLAY_KENKEN
+      start_kenken
+    end
     use_bpm @BPM
     sleep countNoteDelay(@rhythmTime[1]) * @rhythmTime[0]
   end
 end
+
+=begin
+TODO
+- doplniť možnosť konfigurovať ako často sa bude hrať variácia
+- počítať automaticky dĺžku variácie k dĺžke jedného cyklu a zahrať
+variáciu vždy na konci cyklu
+- implementovať spoločné variácie pre sangban a dundun
+- nejako refaktornúť funkcie na prehranie patternu, aby algoritmus bol rovnaký pre dundun aj sangban aj kenken
+- vytvoriť sampler: podobne ako sa zadávajú patterny ako text, môže sa tak vytvoriť aj sampler, tj. konkrétny hudobný nástroj
+- zamysleť sa nad notáciou, aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
+- implementovať swing feeling
+- implementovať djembe
+=end
