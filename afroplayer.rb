@@ -7,22 +7,17 @@ HUMANIZE_TIME = 0.01
 HUMANIZE_DYNAMIC = 0.3
 HUMANIZE_PITCH = 0.005
 
-DUNDUN = {"sample" => :drum_tom_lo_hard, "amp" => 2.4, "rate" => 0.85, "pan" => -0.5}
-DUNDUN_BELL = {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 0.7, "pan" => -0.4}
-
-SANGBAN = {"sample" => :drum_tom_mid_hard, "amp" => 1.3, "rate" => 1, "pan" => 0.5}
-SANGBAN_BELL = {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.18, "pan" => 0.4}
-
-KENKEN = {"sample" => :drum_tom_hi_soft, "amp" => 4, "rate" => 1.8, "pan" => 0}
-KENKEN_BELL = {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.8, "pan" => 0}
-
 INSTRUMENTS = {
-  "dundun" => DUNDUN, "sangban" => SANGBAN, "kenken" => KENKEN,
-  "dunbell" => DUNDUN_BELL, "sanbell" => SANGBAN_BELL, "kenbell" => KENKEN_BELL
+  "dundun" => {"sample" => :drum_tom_lo_hard, "amp" => 2.4, "rate" => 0.85, "pan" => -0.5},
+  "sangban" => {"sample" => :drum_tom_mid_hard, "amp" => 1.3, "rate" => 1, "pan" => 0.5},
+  "kenken" => {"sample" => :drum_tom_hi_soft, "amp" => 4, "rate" => 1.8, "pan" => 0},
+  "dunbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 0.7, "pan" => -0.4},
+  "sanbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.18, "pan" => 0.4},
+  "kenbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.8, "pan" => 0}
 }
 
 BELLS = {
-  DUNDUN => DUNDUN_BELL, SANGBAN => SANGBAN_BELL, KENKEN => KENKEN_BELL
+  "dundun" => "dunbell", "sangban" => "sanbell", "kenken" => "kenbell"
 }
 
 
@@ -66,14 +61,12 @@ define :playInstrument do |instrument: {}, sleep: 0, probability: 1|
   return playSample(sample: instrument["sample"], sleep: sleep, amp: instrument["amp"], pan: instrument["pan"], rate: instrument["rate"], probability: probability)
 end
 
-define :playPattern do |pattern: "", drum: {}|
+define :playPattern do |pattern: ""|
 
   m = pattern.match(RGXP_PATTERN)
-  if m != nil
-    drum = INSTRUMENTS[m[1]]
-    pattern = m[2]
-  end
-  bell = BELLS[drum]
+  drum = INSTRUMENTS[m[1]]
+  pattern = m[2]
+  bell = INSTRUMENTS[BELLS[m[1]]]
   pattern = pattern.delete("|")
 
   sync :tick
@@ -102,14 +95,12 @@ end
 
 define :patternSize do |pattern|
   m = pattern.match(RGXP_PATTERN)
-  if m != nil
-    drum = INSTRUMENTS[m[1]]
-    pattern = m[2]
-  end
+  drum = INSTRUMENTS[m[1]]
+  pattern = m[2]
   return pattern.delete("|").length()
 end
 
-define :playTrack do |trackName: "", drum: {}, basePatterns: [], variations: []|
+define :playTrack do |trackName: "", basePatterns: [], variations: []|
   in_thread(name: trackName) do
 
     loop do
@@ -131,12 +122,12 @@ define :playTrack do |trackName: "", drum: {}, basePatterns: [], variations: []|
 
       #základný pattern sa zahrá príslušný počet krát
       (@VARCYCLE_LEN - x).times do
-        playPattern(pattern: basePatterns.choose, drum: drum)
+        playPattern(pattern: basePatterns.choose)
       end
 
       #a na záver cyklu sa zahrá variácia
       if t >= 0
-        playPattern(pattern: variations[t], drum: drum)
+        playPattern(pattern: variations[t])
       end
 
     end
@@ -144,15 +135,15 @@ define :playTrack do |trackName: "", drum: {}, basePatterns: [], variations: []|
 end
 
 define :start_dundun do
-  playTrack(trackName: "dundunTrack", drum: DUNDUN, basePatterns: @dundunBasePatterns, variations: @dundunVariations)
+  playTrack(trackName: "dundunTrack", basePatterns: @dundunBasePatterns, variations: @dundunVariations)
 end
 
 define :start_sangban do
-  playTrack(trackName: "sangbanTrack", drum: SANGBAN, basePatterns: @sangbanBasePatterns, variations: @sangbanVariations)
+  playTrack(trackName: "sangbanTrack", basePatterns: @sangbanBasePatterns, variations: @sangbanVariations)
 end
 
 define :start_kenken do
-  playTrack(trackName: "kenkenTrack", drum: KENKEN, basePatterns: @kenkenBasePatterns, variations: [])
+  playTrack(trackName: "kenkenTrack", basePatterns: @kenkenBasePatterns, variations: [])
 end
 
 define :playWholeSong do
