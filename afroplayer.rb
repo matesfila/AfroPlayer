@@ -75,25 +75,33 @@ define :playSample do |sample: '', sleep: 0, amp: 1, pan: 1, rate: 1, probabilit
 
   if rand <= probability
     sample sample, amp: rand_around(amp, HUMANIZE_DYNAMIC), pan: pan, rate: rand_around(rate, HUMANIZE_PITCH)
-    sleep rand_around(sleep, HUMANIZE_TIME)
     return true
   else
-    sleep sleep
     return false
   end
 end
 
-define :playInstrument do |instrument: {}, sleep: 0, probability: 1|
-  return playSample(sample: instrument["sample"], sleep: sleep, amp: instrument["amp"], pan: instrument["pan"], rate: instrument["rate"], probability: probability)
+define :playInstrument do |instrument: {}, probability: 1|
+  return playSample(sample: instrument["sample"], sleep: 0, amp: instrument["amp"], pan: instrument["pan"], rate: instrument["rate"], probability: probability)
+end
+
+# Rozparsuje vstupný pattern, ktorý je na vstupe v surovom stave.
+# +return+ Vráti mapu s kľúčmi instrumentName a pattern
+define :patternParse do |pattern|
+  m = pattern.match(RGXP_PATTERN)
+  return {"instrumentName" => m[1], "pattern" => m[2].delete("|")}
+end
+
+define :patternSize do |pattern|
+  return patternParse(pattern)["pattern"].length()
 end
 
 define :playPattern do |pattern: ""|
 
-  m = pattern.match(RGXP_PATTERN)
-  drum = INSTRUMENTS[m[1]]
-  pattern = m[2]
-  bell = INSTRUMENTS[BELLS[m[1]]]
-  pattern = pattern.delete("|")
+  m = patternParse(pattern)
+  drum = INSTRUMENTS[m["instrumentName"]]
+  bell = INSTRUMENTS[BELLS[m["instrumentName"]]]
+  pattern = m["pattern"]
 
   sync :tick
   use_bpm @BPM
@@ -119,16 +127,8 @@ define :playPattern do |pattern: ""|
   }
 end
 
-define :patternSize do |pattern|
-  m = pattern.match(RGXP_PATTERN)
-  drum = INSTRUMENTS[m[1]]
-  pattern = m[2]
-  return pattern.delete("|").length()
-end
-
-define :playTrack do |trackName: "", basePatterns: [], variations: []|
+define :playLiveTrack do |trackName: "", basePatterns: [], variations: []|
   in_thread(name: trackName) do
-
     loop do
       use_bpm @BPM
 
@@ -155,41 +155,28 @@ define :playTrack do |trackName: "", basePatterns: [], variations: []|
       if t >= 0
         playPattern(pattern: variations[t])
       end
-
     end
   end
 end
 
-define :start_dundun do
-  playTrack(trackName: "dundunTrack", basePatterns: @dundunBasePatterns, variations: @dundunVariations)
-end
-
-define :start_sangban do
-  playTrack(trackName: "sangbanTrack", basePatterns: @sangbanBasePatterns, variations: @sangbanVariations)
-end
-
-define :start_kenken do
-  playTrack(trackName: "kenkenTrack", basePatterns: @kenkenBasePatterns, variations: [])
-end
-
-define :playWholeSong do
+define :playLive do
   live_loop :songLoop do
     cue :tick
     if @PLAY_DUNDUN
-      start_dundun
+      playLiveTrack(trackName: "dundunTrack", basePatterns: @dundunBasePatterns, variations: @dundunVariations)
     end
     if @PLAY_SANGBAN
-      start_sangban
+      playLiveTrack(trackName: "sangbanTrack", basePatterns: @sangbanBasePatterns, variations: @sangbanVariations)
     end
     if @PLAY_KENKEN
-      start_kenken
+      playLiveTrack(trackName: "kenkenTrack", basePatterns: @kenkenBasePatterns, variations: [])
     end
     use_bpm @BPM
     sleep DELAY * @RHYTHM_TIME[0]
   end
 end
 
-playWholeSong()
+playLive()
 
 =begin
 
