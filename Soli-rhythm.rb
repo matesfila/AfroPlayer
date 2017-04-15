@@ -20,7 +20,7 @@
   #["dundun: X.bb.bX.XX.X"] +
   []
 
-@sangbanBasePatterns = ["sangban: X.b.b.b.bX.b"]
+@sangbanBasePatterns = ["sangban: X.b.I.I.bX.b"]
 @sangbanVariations = ["sangban: X.X.X.X.bX.b"]
 
 @kenkenBasePatterns = ["kenken: .bb.XX.bb.XX"]

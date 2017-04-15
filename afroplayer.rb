@@ -7,19 +7,26 @@ HUMANIZE_TIME = 0.01
 HUMANIZE_DYNAMIC = 0.2
 HUMANIZE_PITCH = 0.005
 
-INSTRUMENTS = {
+SAMPLES = {
   "dundun" => {"sample" => :drum_tom_lo_hard, "amp" => 2.4, "rate" => 0.85, "pan" => -0.5},
+  "dunclos" => {"sample" => :drum_tom_lo_hard, "amp" => 1, "rate" => 0.95, "pan" => -0.5,
+                "attack" => 0, "sustain" => 0, "release" => 0.18},
   "sangban" => {"sample" => :drum_tom_mid_hard, "amp" => 1.3, "rate" => 1, "pan" => 0.5},
-  "kenken" => {"sample" => :drum_tom_hi_soft, "amp" => 4, "rate" => 1.4, "pan" => 0.2},
+  "sanclos" => {"sample" => :drum_tom_mid_hard, "amp" => 0.9, "rate" => 1.15, "pan" => 0.5,
+                "attack" => 0, "sustain" => 0, "release" => 0.18},
+  "kenken" => {"sample" => :drum_tom_hi_hard, "amp" => 1.3, "rate" => 1.4, "pan" => 0.2},
+  "kenclos" => {"sample" => :drum_tom_hi_hard, "amp" => 0.8, "rate" => 1.5, "pan" => 0.2,
+               "attack" => 0, "sustain" => 0, "release" => 0.13},
   "dunbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 0.7, "pan" => -0.4},
   "sanbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.18, "pan" => 0.4},
   "kenbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.8, "pan" => 0.2}
 }
 
-BELLS = {
-  "dundun" => "dunbell", "sangban" => "sanbell", "kenken" => "kenbell"
+INSTRUMENTS = {
+  "dundun" => {"open" => SAMPLES["dundun"], "closed" => SAMPLES["dunclos"], "bell" => SAMPLES["dunbell"]},
+  "sangban" => {"open" => SAMPLES["sangban"], "closed" => SAMPLES["sanclos"], "bell" => SAMPLES["sanbell"]},
+  "kenken" => {"open" => SAMPLES["kenken"], "closed" => SAMPLES["kenclos"], "bell" => SAMPLES["kenbell"]}
 }
-
 
 ####################################################
 #Systémová časť - core (bežne sa do nej nezasahuje)#
@@ -52,7 +59,7 @@ if @RHYTHM_SWING == nil
 end
 
 #regulárny výraz na hodnotu patternu, príklad: "kenken: x.b.x.b.|x.b.x.b."
-RGXP_PATTERN = /^(\w+):\s+([\.\|bXABC]+)$/
+RGXP_PATTERN = /^(\w+):\s+([\.\|bXABCI]+)$/
 
 define :countNoteDelay do |note|
   #definuje dĺžku sleepu: pre štvrťové rytmy sa hrajú šestnástinové noty, pre trojkové sa hrajú osminové
@@ -70,19 +77,21 @@ define :rand_around do |v,r|
   return rrand(v-r, v+r)
 end
 
-define :playSample do |sample: '', sleep: 0, amp: 1, pan: 1, rate: 1, probability: 1|
+define :playSample do |instrument: {}, probability: 1|
   use_bpm @BPM
 
   if rand <= probability
-    sample sample, amp: rand_around(amp, HUMANIZE_DYNAMIC), pan: pan, rate: rand_around(rate, HUMANIZE_PITCH)
+    sample instrument["sample"],
+      amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
+      pan: instrument["pan"],
+      rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
+      attack: instrument["attack"],
+      sustain: instrument["sustain"],
+      release: instrument["release"]
     return true
   else
     return false
   end
-end
-
-define :playInstrument do |instrument: {}, probability: 1|
-  return playSample(sample: instrument["sample"], sleep: 0, amp: instrument["amp"], pan: instrument["pan"], rate: instrument["rate"], probability: probability)
 end
 
 # Rozparsuje vstupný pattern, ktorý je na vstupe v surovom stave.
@@ -99,8 +108,9 @@ end
 define :playPattern do |pattern: ""|
 
   m = patternParse(pattern)
-  drum = INSTRUMENTS[m["instrumentName"]]
-  bell = INSTRUMENTS[BELLS[m["instrumentName"]]]
+  drumOpen = INSTRUMENTS[m["instrumentName"]]["open"]
+  drumClosed = INSTRUMENTS[m["instrumentName"]]["closed"]
+  bell = INSTRUMENTS[m["instrumentName"]]["bell"]
   pattern = m["pattern"]
 
   sync :tick
@@ -108,19 +118,22 @@ define :playPattern do |pattern: ""|
   pattern.each_char { |c|
     case
     when c == 'X'
-      playInstrument(instrument: drum, probability: 1)
-      playInstrument(instrument: bell)
+      playSample(instrument: drumOpen, probability: 1)
+      playSample(instrument: bell)
     when c == 'A'
-      playInstrument(instrument: drum, probability: 0.09)
-      playInstrument(instrument: bell)
+      playSample(instrument: drumOpen, probability: 0.12)
+      playSample(instrument: bell)
     when c == 'B'
-      playInstrument(instrument: drum, probability: 0.4)
-      playInstrument(instrument: bell)
+      playSample(instrument: drumOpen, probability: 0.4)
+      playSample(instrument: bell)
     when c == 'C'
-      playInstrument(instrument: drum, probability: 0.8)
-      playInstrument(instrument: bell)
+      playSample(instrument: drumOpen, probability: 0.8)
+      playSample(instrument: bell)
+    when c == 'I'
+      playSample(instrument: drumClosed, probability: 1)
+      playSample(instrument: bell)
     when c == 'b'
-      playInstrument(instrument: bell)
+      playSample(instrument: bell)
     when c == '.'
     end
     sleep rand_around(DELAY + @RHYTHM_SWING.tick, HUMANIZE_TIME)
