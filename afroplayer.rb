@@ -4,16 +4,16 @@
 ##################################################################
 
 HUMANIZE_TIME = 0.01
-HUMANIZE_DYNAMIC = 0.3
+HUMANIZE_DYNAMIC = 0.2
 HUMANIZE_PITCH = 0.005
 
 INSTRUMENTS = {
   "dundun" => {"sample" => :drum_tom_lo_hard, "amp" => 2.4, "rate" => 0.85, "pan" => -0.5},
   "sangban" => {"sample" => :drum_tom_mid_hard, "amp" => 1.3, "rate" => 1, "pan" => 0.5},
-  "kenken" => {"sample" => :drum_tom_hi_soft, "amp" => 4, "rate" => 1.8, "pan" => 0},
+  "kenken" => {"sample" => :drum_tom_hi_soft, "amp" => 4, "rate" => 1.4, "pan" => 0.2},
   "dunbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 0.7, "pan" => -0.4},
   "sanbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.18, "pan" => 0.4},
-  "kenbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.8, "pan" => 0}
+  "kenbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.8, "pan" => 0.2}
 }
 
 BELLS = {
@@ -24,6 +24,32 @@ BELLS = {
 ####################################################
 #Systémová časť - core (bežne sa do nej nezasahuje)#
 ####################################################
+
+# Nastavenie defaultných hodnôt pre globálne premenné
+
+if @BPM == nil
+  @BPM = 95
+end
+
+if @PLAY_DUNDUN == nil
+  @PLAY_DUNDUN=true
+end
+if @PLAY_SANGBAN == nil
+  @PLAY_SANGBAN=true
+end
+if @PLAY_KENKEN == nil
+  @PLAY_KENKEN=true
+end
+
+if @VARCYCLE_LEN == nil
+  @VARCYCLE_LEN=4
+end
+if @RHYTHM_TIME == nil
+  @RHYTHM_TIME=[8,4] #osem štvrťový rytmus
+end
+if @RHYTHM_SWING == nil
+  @RHYTHM_SWING=(ring 0,0,0,0)
+end
 
 #regulárny výraz na hodnotu patternu, príklad: "kenken: x.b.x.b.|x.b.x.b."
 RGXP_PATTERN = /^(\w+):\s+([\.\|bXABC]+)$/
@@ -38,7 +64,7 @@ define :countNoteDelay do |note|
   end
 end
 
-DELAY = countNoteDelay(@rhythmTime[1])
+DELAY = countNoteDelay(@RHYTHM_TIME[1])
 
 define :rand_around do |v,r|
   return rrand(v-r, v+r)
@@ -89,7 +115,7 @@ define :playPattern do |pattern: ""|
       playInstrument(instrument: bell)
     when c == '.'
     end
-    sleep DELAY
+    sleep rand_around(DELAY + @RHYTHM_SWING.tick, HUMANIZE_TIME)
   }
 end
 
@@ -159,7 +185,7 @@ define :playWholeSong do
       start_kenken
     end
     use_bpm @BPM
-    sleep DELAY * @rhythmTime[0]
+    sleep DELAY * @RHYTHM_TIME[0]
   end
 end
 
@@ -173,11 +199,12 @@ OK - doplniť možnosť konfigurovať ako často sa bude hrať variácia
 OK - vytvoriť sampler: podobne ako sa zadávajú patterny ako text, môže sa tak vytvoriť aj sampler, tj. konkrétny hudobný nástroj
 OK - počítať automaticky dĺžku variácie k dĺžke jedného cyklu a zahrať variáciu vždy na konci cyklu
 - envelope: obálky, modifikátory pre patterny/tracky
-- implementovať swing feeling
+OK - implementovať swing feeling
 
 - inteligentnejší sampler: náhodné sample, vrstvy pre rôzne dynamiky
 - zamysleť sa nad notáciou, aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
 - spoločné variácie pre sangban a dundun
+- uzavreté údery pre dunduny
 - djembe
 
 Kompozícia patternu

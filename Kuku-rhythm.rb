@@ -10,8 +10,7 @@
 @PLAY_KENKEN=true
 
 @VARCYCLE_LEN=4
-
-@rhythmTime = [8,4] #osem štvrťový rytmus
+@RHYTHM_TIME = [8,4] #osem štvrťový rytmus
 
 @dundunBasePatterns = Array.new(12, "dundun: b.bX.bb.|b.b.A.b.") + ["dundun: bX.X.bb.|b.b.A.b."]
 @dundunVariations =

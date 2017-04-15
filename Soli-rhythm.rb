@@ -3,21 +3,21 @@
 #############
 
 
-@BPM = 130
+@BPM = 115
 
 @PLAY_DUNDUN=true
 @PLAY_SANGBAN=true
 @PLAY_KENKEN=true
 
 @VARCYCLE_LEN=4
-
-@rhythmTime = [12,8] #dvanásť osminový rytmus
+@RHYTHM_TIME = [12,8] #dvanásť osminový rytmus
+@RHYTHM_SWING = (ring 0.03,-0.03, 0)
 
 @dundunBasePatterns = Array.new(1, "dundun: X.bb.bb.XX.X")
 @dundunVariations =
-  #["X.X.XXXX.XXX|.XX.X.X.XX.X"] +
+  #["dundun: X.X.XXXX.XXX|.XX.X.X.XX.X"] +
   ["dundun: X.bb.bb.b.XX|.X.X.X.bXX.X"] +
-  #["X.bb.bX.XX.X"] +
+  #["dundun: X.bb.bX.XX.X"] +
   []
 
 @sangbanBasePatterns = ["sangban: X.b.b.b.bX.b"]
