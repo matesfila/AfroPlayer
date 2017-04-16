@@ -8,6 +8,7 @@
 @PLAY_DUNDUN=true
 @PLAY_SANGBAN=true
 @PLAY_KENKEN=true
+@PLAY_DJEMBE=true
 
 @VARCYCLE_LEN=4
 @RHYTHM_TIME = [8,4] #osem štvrťový rytmus
@@ -23,5 +24,6 @@
 
 @sangbanBasePatterns = ["sangban: X.b.b.X.|X.b.b.X."]
 @sangbanVariations = []
-
 @kenkenBasePatterns = ["kenken: X.b.X.b.|X.b.X.b."]
+
+@djembeBasePatterns = ["djembe: x.oo..x.|x.oo..x."]

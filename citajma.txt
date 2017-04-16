@@ -1,0 +1,19 @@
+Rozbehanie sonic-pi-cli
+=======================
+- nainötalovaù https://rubyinstaller.org
+- daù ruby do cesty PATH
+- spustiù prÌkaz gem install sonic-pi-cli (viÔ https://github.com/Widdershin/sonic-pi-cli)
+
+Funguje OK.
+
+
+Rozbehanie sonic-pi-tool
+========================
+
+http://landinghub.visualstudio.com/visual-cpp-build-tools
+
+https://www.rust-lang.org/en-US/install.html
+
+cargo install --git https://github.com/lpil/sonic-pi-tool/
+
+Tento posledn˝ prÌkaz mi ale zlyhal, takûe sa mi to nepodarilo rozchodiù.

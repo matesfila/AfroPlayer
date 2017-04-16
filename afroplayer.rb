@@ -8,7 +8,7 @@ HUMANIZE_DYNAMIC = 0.2
 HUMANIZE_PITCH = 0.005
 
 SAMPLES = {
-  "dundun" => {"sample" => :drum_tom_lo_hard, "amp" => 2.4, "rate" => 0.85, "pan" => -0.5},
+  "dundun" => {"sample" => :drum_tom_lo_hard, "amp" => 1.9, "rate" => 0.85, "pan" => -0.5},
   "dunclos" => {"sample" => :drum_tom_lo_hard, "amp" => 1, "rate" => 0.95, "pan" => -0.5,
                 "attack" => 0, "sustain" => 0, "release" => 0.18},
   "sangban" => {"sample" => :drum_tom_mid_hard, "amp" => 1.3, "rate" => 1, "pan" => 0.5},
@@ -19,13 +19,19 @@ SAMPLES = {
                "attack" => 0, "sustain" => 0, "release" => 0.13},
   "dunbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 0.7, "pan" => -0.4},
   "sanbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.18, "pan" => 0.4},
-  "kenbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.8, "pan" => 0.2}
+  "kenbell" => {"sample" => :drum_cowbell, "amp" => 0.7, "rate" => 1.8, "pan" => 0.2},
+  "djbass" => {"sample" => :DJEMBEBASS2, "amp" => 2, "rate" => 1, "pan" => 0},
+  "djton" => {"sample" => :DJEMBE3, "amp" => 2, "rate" => 1, "pan" => 0},
+  "djslap" => {"sample" => :DJEMBESLAP2, "amp" => 2, "rate" => 1.6, "pan" => 0},
+  "djclos" => {"sample" => :DJEMBESLAP1, "amp" => 2, "rate" => 1, "pan" => 0,
+              "attack" => 0, "sustain" => 0, "release" => 0.13}
 }
 
 INSTRUMENTS = {
   "dundun" => {"open" => SAMPLES["dundun"], "closed" => SAMPLES["dunclos"], "bell" => SAMPLES["dunbell"]},
   "sangban" => {"open" => SAMPLES["sangban"], "closed" => SAMPLES["sanclos"], "bell" => SAMPLES["sanbell"]},
-  "kenken" => {"open" => SAMPLES["kenken"], "closed" => SAMPLES["kenclos"], "bell" => SAMPLES["kenbell"]}
+  "kenken" => {"open" => SAMPLES["kenken"], "closed" => SAMPLES["kenclos"], "bell" => SAMPLES["kenbell"]},
+  "djembe" => {"bass" => SAMPLES["djbass"], "ton" => SAMPLES["djton"], "slap" => SAMPLES["djslap"], "closed" => SAMPLES["djclos"]}
 }
 
 ####################################################
@@ -47,6 +53,9 @@ end
 if @PLAY_KENKEN == nil
   @PLAY_KENKEN=true
 end
+if @PLAY_DJEMBE == nil
+  @PLAY_DJEMBE=true
+end
 
 if @VARCYCLE_LEN == nil
   @VARCYCLE_LEN=4
@@ -59,7 +68,7 @@ if @RHYTHM_SWING == nil
 end
 
 #regulárny výraz na hodnotu patternu, príklad: "kenken: x.b.x.b.|x.b.x.b."
-RGXP_PATTERN = /^(\w+):\s+([\.\|bXABCI]+)$/
+RGXP_PATTERN = /^(\w+):\s+([\.\|bXABCIxo]+)$/
 
 define :countNoteDelay do |note|
   #definuje dĺžku sleepu: pre štvrťové rytmy sa hrajú šestnástinové noty, pre trojkové sa hrajú osminové
@@ -108,9 +117,13 @@ end
 define :playPattern do |pattern: ""|
 
   m = patternParse(pattern)
-  drumOpen = INSTRUMENTS[m["instrumentName"]]["open"]
-  drumClosed = INSTRUMENTS[m["instrumentName"]]["closed"]
-  bell = INSTRUMENTS[m["instrumentName"]]["bell"]
+  iname = m["instrumentName"]
+  drumOpen = INSTRUMENTS[iname]["open"]
+  drumClosed = INSTRUMENTS[iname]["closed"]
+  bell = INSTRUMENTS[iname]["bell"]
+  bass = INSTRUMENTS[iname]["bass"]
+  ton = INSTRUMENTS[iname]["ton"]
+  slap = INSTRUMENTS[iname]["slap"]
   pattern = m["pattern"]
 
   sync :tick
@@ -132,6 +145,10 @@ define :playPattern do |pattern: ""|
     when c == 'I'
       playSample(instrument: drumClosed, probability: 1)
       playSample(instrument: bell)
+    when c == 'x'
+      playSample(instrument: slap, probability: 1)
+    when c == 'o'
+      playSample(instrument: ton, probability: 1)
     when c == 'b'
       playSample(instrument: bell)
     when c == '.'
@@ -184,6 +201,9 @@ define :playLive do
     if @PLAY_KENKEN
       playLiveTrack(trackName: "kenkenTrack", basePatterns: @kenkenBasePatterns, variations: [])
     end
+    if @PLAY_DJEMBE
+      playLiveTrack(trackName: "djembeTrack", basePatterns: @djembeBasePatterns, variations: [])
+    end
     use_bpm @BPM
     sleep DELAY * @RHYTHM_TIME[0]
   end
@@ -204,8 +224,13 @@ OK - implementovať swing feeling
 - inteligentnejší sampler: náhodné sample, vrstvy pre rôzne dynamiky
 - zamysleť sa nad notáciou, aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
 - spoločné variácie pre sangban a dundun
-- uzavreté údery pre dunduny
-- djembe
+OK - uzavreté údery pre dunduny
+OK - djembe
+
+Definícia rytmu
+- zadanie rytmu pre afroplayer pomocou hash tabuľky (imitácia definovania rytmu cez xml)
+- pre používateľa sa môže potom vytvoriť viac user friendly zadanie, pre ktoré vznikne
+  kompilátor do zadania cez hash tabuľky
 
 Kompozícia patternu
 1) viacriadkové patterny (multipatterny)
