@@ -7,26 +7,43 @@ HUMANIZE_TIME = 0.01
 HUMANIZE_DYNAMIC = 0.2
 HUMANIZE_PITCH = 0.005
 
-SAMPLES = {
-  "dundun" => {"sample" => :drum_tom_lo_hard, "amp" => 1.5, "rate" => 0.85, "pan" => -0.5},
-  "dunclos" => {"sample" => :drum_tom_lo_hard, "amp" => 0.7, "rate" => 0.95, "pan" => -0.5,
-                "attack" => 0, "sustain" => 0, "release" => 0.18},
-  "sangban" => {"sample" => :drum_tom_mid_hard, "amp" => 1.2, "rate" => 1, "pan" => 0.5},
-  "sanclos" => {"sample" => :drum_tom_mid_hard, "amp" => 0.7, "rate" => 1.15, "pan" => 0.5,
-                "attack" => 0, "sustain" => 0, "release" => 0.18},
-  "kenken" => {"sample" => :drum_tom_hi_hard, "amp" => 1, "rate" => 1.4, "pan" => 0.2},
-  "kenclos" => {"sample" => :drum_tom_hi_hard, "amp" => 0.6, "rate" => 1.5, "pan" => 0.2,
-               "attack" => 0, "sustain" => 0, "release" => 0.13},
-  "dunbell" => {"sample" => :drum_cowbell, "amp" => 0.5, "rate" => 0.7, "pan" => -0.4},
-  "sanbell" => {"sample" => :drum_cowbell, "amp" => 0.5, "rate" => 1.18, "pan" => 0.4},
-  "kenbell" => {"sample" => :drum_cowbell, "amp" => 0.5, "rate" => 1.8, "pan" => 0.2},
-  "djbass" => {"sample" => :DJEMBEBASS2, "amp" => 2, "rate" => 1, "pan" => 0},
-  "djton" => {"sample" => :DJEMBE3, "amp" => 2, "rate" => 1, "pan" => 0},
-  "djslap" => {"sample" => :DJEMBESLAP3, "amp" => 3.2, "rate" => 1.6, "pan" => 0},
-  "djclos" => {"sample" => :DJEMBESLAP1, "amp" => 2, "rate" => 1, "pan" => 0,
-              "attack" => 0, "sustain" => 0, "release" => 0.13}
-}
+# SAMPLES = {
+#   "dundun" => {"sample" => :drum_tom_lo_hard, "amp" => 1.2, "rate" => 0.75, "pan" => -0.5, "sustain" => 0.18, "release" => 0.02},
+#   "dunclos" => {"sample" => :drum_tom_lo_hard, "amp" => 0.7, "rate" => 0.95, "pan" => -0.5,
+#                 "attack" => 0, "sustain" => 0, "release" => 0.18},
+#   "sangban" => {"sample" => :drum_tom_mid_hard, "amp" => 1.2, "rate" => 1, "pan" => 0.5},
+#   "sanclos" => {"sample" => :drum_tom_mid_hard, "amp" => 0.7, "rate" => 1.15, "pan" => 0.5,
+#                 "attack" => 0, "sustain" => 0, "release" => 0.025},
+#   "kenken" => {"sample" => :drum_tom_hi_soft, "amp" => 4, "rate" => 1.55, "pan" => 0.2, "sustain" => 0.15, "release" => 0.03},
+#   "kenclos" => {"sample" => :drum_tom_hi_hard, "amp" => 0.6, "rate" => 1.5, "pan" => 0.2,
+#                "attack" => 0, "sustain" => 0, "release" => 0.13},
+#   "dunbell" => {"sample" => :drum_cowbell, "amp" => 0.5, "rate" => 0.7, "pan" => -0.4},
+#   "sanbell" => {"sample" => :drum_cowbell, "amp" => 0.5, "rate" => 1.18, "pan" => 0.4},
+#   "kenbell" => {"sample" => :drum_cowbell, "amp" => 0.5, "rate" => 1.8, "pan" => 0.2},
+#   "djbass" => {"sample" => :DJEMBEBASS2, "amp" => 1.5, "rate" => 1, "pan" => 0},
+#   "djton" => {"sample" => :DJEMBE3, "amp" => 1.5, "rate" => 1, "pan" => 0},
+#   "djslap" => {"sample" => :DJEMBESLAP3, "amp" => 1.5, "rate" => 1.1, "pan" => 0},
+#   "djclos" => {"sample" => :DJEMBESLAP1, "amp" => 1.5, "rate" => 1, "pan" => 0}
+# }
 
+SAMPLES = {
+  "dundun" => {"sample" => :drum_dundun, "amp" => 5, "rate" => 0.84, "pan" => -0.3},
+  "dunclos" => {"sample" => :drum_dundun, "amp" => 0.7, "rate" => 0.95, "pan" => -0.3,
+                "attack" => 0, "sustain" => 0, "release" => 0.18},
+  "sangban" => {"sample" => :drum_sangban, "amp" => 4.8, "rate" => 0.9, "pan" => 0.1},
+  "sanclos" => {"sample" => :drum_sangban, "amp" => 0.7, "rate" => 1.15, "pan" => 0.1,
+                "attack" => 0, "sustain" => 0, "release" => 0.025},
+  "kenken" => {"sample" => :drum_kenkeni, "amp" => 4, "rate" => 1.1, "pan" => 0.02},
+  "kenclos" => {"sample" => :drum_kenkeni, "amp" => 0.6, "rate" => 1.05, "pan" => 0.02,
+               "attack" => 0, "sustain" => 0, "release" => 0.13},
+  "dunbell" => {"sample" => :drum_dundun_bell, "amp" => 1.7, "rate" => 0.8, "pan" => -0.3},
+  "sanbell" => {"sample" => :drum_sangban_bell, "amp" => 1.7, "rate" => 1, "pan" => 0.1},
+  "kenbell" => {"sample" => :drum_kenkeni_bell, "amp" => 1.7, "rate" => 1.2, "pan" => 0.02},
+  "djbass" => {"sample" => :DJEMBEBASS2, "amp" => 1, "rate" => 1, "pan" => 0},
+  "djton" => {"sample" => :DJEMBE3, "amp" => 1, "rate" => 1, "pan" => 0},
+  "djslap" => {"sample" => :DJEMBESLAP3, "amp" => 1, "rate" => 1.1, "pan" => 0},
+  "djclos" => {"sample" => :DJEMBESLAP1, "amp" => 1, "rate" => 1, "pan" => 0}
+}
 INSTRUMENTS = {
   "dundun" => {"open" => SAMPLES["dundun"], "closed" => SAMPLES["dunclos"], "bell" => SAMPLES["dunbell"]},
   "sangban" => {"open" => SAMPLES["sangban"], "closed" => SAMPLES["sanclos"], "bell" => SAMPLES["sanbell"]},
@@ -89,8 +106,8 @@ if @RHYTHM_SWING == nil
   @RHYTHM_SWING=(ring 0,0,0,0)
 end
 
-#regulárny výraz na hodnotu patternu, príklad: "kenken: x.b.x.b.|x.b.x.b."
-RGXP_PATTERN = /^(\w+):\s+([\.\|bXABCDIxo]+)$/
+#regulárny výraz na hodnotu patternu, príklad: "x.b.x.b.|x.b.x.b."
+RGXP_PATTERN = /^([\.\|bXABCDIxo]+)$/
 
 define :countNoteDelay do |note|
   #definuje dĺžku sleepu: pre štvrťové rytmy sa hrajú šestnástinové noty, pre trojkové sa hrajú osminové
@@ -112,41 +129,44 @@ define :playSample do |instrument: {}, probability: 1|
   use_bpm @BPM
 
   if rand <= probability
-    sample instrument["sample"],
-      amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
-      pan: instrument["pan"],
-      rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
-      attack: instrument["attack"],
-      sustain: instrument["sustain"],
-      release: instrument["release"]
+    with_fx :compressor do
+      with_fx :reverb, room:0.09, damp:1 do
+        sample instrument["sample"],
+          amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
+          pan: instrument["pan"],
+          rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
+          attack: instrument["attack"],
+          sustain: instrument["sustain"],
+          release: instrument["release"]
+      end
+    end
     return true
   else
     return false
   end
 end
 
-# Rozparsuje vstupný pattern, ktorý je na vstupe v surovom stave.
-# +return+ Vráti mapu s kľúčmi instrumentName a pattern
+# Rozparsuje vstupný pattern.
+# +return+ Vráti pattern v stave iba s notami, bez pomocných symbolov.
 define :patternParse do |pattern|
   m = pattern.match(RGXP_PATTERN)
-  return {"instrumentName" => m[1], "pattern" => m[2].delete("|")}
+  return m[1].delete("|")
 end
 
 define :patternSize do |pattern|
-  return patternParse(pattern)["pattern"].length()
+  return patternParse(pattern).length()
 end
 
-define :playPattern do |pattern: ""|
+define :playPattern do |pattern: "", instrumentName: ""|
 
-  m = patternParse(pattern)
-  iname = m["instrumentName"]
+  iname = instrumentName
   drumOpen = INSTRUMENTS[iname]["open"]
   drumClosed = INSTRUMENTS[iname]["closed"]
   bell = INSTRUMENTS[iname]["bell"]
   bass = INSTRUMENTS[iname]["bass"]
   ton = INSTRUMENTS[iname]["ton"]
   slap = INSTRUMENTS[iname]["slap"]
-  pattern = m["pattern"]
+  pattern = patternParse(pattern)
 
   sync :tick
   use_bpm @BPM
@@ -181,9 +201,19 @@ define :playPattern do |pattern: ""|
   }
 end
 
+define :findDependencies do |instrument: "", pattern: ""|
+  if pattern == "X.bb.bb.b.XX|.X.X.X.bXX.X"
+    return ["X.b.I.I.bX.b|X.X.X.X.bX.b"];
+  else
+    return []
+  end
+end
+
 define :playLiveTrack do |trackName, rhythm, instrument|
+
   basePatterns = rhythm["patterns"][instrument]["base"]
   variations = rhythm["patterns"][instrument]["variations"]
+
   in_thread(name: trackName) do
     loop do
       use_bpm @BPM
@@ -191,25 +221,25 @@ define :playLiveTrack do |trackName, rhythm, instrument|
       #((dice(2) - 1)*4).times do
 
       x = 0
-      t = -1
+      variation = nil
       if (variations.size > 0)
         #t = aká variácia sa bude hrať, náhodný výber
-        t = dice(variations.size) - 1
+        variation = variations[dice(variations.size) - 1]
 
         #x = koľkokrát sa základný pattern nachádza vo variácii (velkosť variácie...)
         #variácia nemôže byť menšia ako velkosť base patternu
         #basePatterns musia mat vsetky rovnaku velkost
-        x = patternSize(variations[t]) / patternSize(basePatterns[0])
+        x = patternSize(variation) / patternSize(basePatterns[0])
       end
 
       #základný pattern sa zahrá príslušný počet krát
       (@VARCYCLE_LEN - x).times do
-        playPattern(pattern: basePatterns.choose)
+        playPattern(pattern: basePatterns.choose, instrumentName: instrument)
       end
 
       #a na záver cyklu sa zahrá variácia
-      if t >= 0
-        playPattern(pattern: variations[t])
+      if variation != nil
+        playPattern(pattern: variation, instrumentName: instrument)
       end
     end
   end
@@ -242,7 +272,6 @@ playLive()
 TODO
 - djembe sólovanie
 - notácia patternov, zamysleť sa aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
-- afro sample
 - závislosti medzi patternami, spoločné variácie pre sangban a dundun
 - envelope: obálky, modifikátory pre patterny/tracky
 - inteligentnejší sampler: náhodné sample, vrstvy pre rôzne dynamiky
@@ -268,7 +297,8 @@ OK - vytvoriť sampler: podobne ako sa zadávajú patterny ako text, môže sa t
 OK - počítať automaticky dĺžku variácie k dĺžke jedného cyklu a zahrať variáciu vždy na konci cyklu
 OK - implementovať swing feeling
 OK - uzavreté údery pre dunduny
-OK - djembe
+OK - djembe (zatial na úrovni dundunov, bez možnosti sól v zmenenom time)
+OK - afro sample (zatial narýchlo čo som našiel, neskôr zdokonaliť)
 
 Definícia rytmu
 OK - zadanie rytmu pre afroplayer pomocou hash tabuľky (imitácia definovania rytmu cez xml)

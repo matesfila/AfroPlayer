@@ -15,23 +15,29 @@
 @RHYTHM = {
   "patterns" => {
     "dundun" => {
-      "base" => ["dundun: X.bb.bb.XX.X"],
+      "base" => ["X.bb.bb.XX.X"],
       "variations" =>   #["dundun: X.X.XXXX.XXX|.XX.X.X.XX.X"] +
-                        ["dundun: X.bb.bb.b.XX|.X.X.X.bXX.X"] +
+                        ["X.bb.bb.b.XX|.X.X.X.bXX.X"] +
                         #["dundun: X.bb.bX.XX.X"] +
                         []
     },
     "sangban" => {
-      "base" => ["sangban: X.b.I.I.bX.b"],
-      "variations" => ["sangban: X.X.X.X.bX.b"]
+      "base" => ["X.b.I.I.bX.b"],
+      "variations" => ["X.X.X.X.bX.b"] #+ Array.new(10, "XX.XX.XX.XX.")
     },
     "kenken" => {
-      "base" => ["kenken: .bb.XX.bb.XX"],
+      "base" => [".bb.XX.bb.XX"],
       "variations" => []
     },
     "djembe" => {
-      "base" => ["djembe: x.ox.Dx.ox.."],
-      "variations" => []
+      "base" => ["x.ox.Dx.ox.."],
+      "variations" => ["x.oxoox.oxoo|xooxooxoox.."]
     }
   }
+  # ,
+  # "dependencies" => {
+  #   "dundun" => {
+  #     "sangban" => {1 => 1}
+  #   }
+  # }
 }

@@ -14,25 +14,25 @@
 @RHYTHM = {
   "patterns" => {
     "dundun" => {
-      "base" => Array.new(12, "dundun: b.bX.bb.|b.b.A.b.") + ["dundun: bX.X.bb.|b.b.A.b."],
-      "variations" => Array.new(4, "dundun: b.bX.bb.|X.bX.bX.") +
-                      Array.new(8, "dundun: b.AX.AX.|AX.AX.X.") +
-                      Array.new(2, "dundun: b.bX.bb.|X.XX.XX.") +
-                      Array.new(8, "dundun: B.BB.BB.|C.CC.CC.") +
-                      Array.new(2, "dundun: X.bX.bB.|X.XX.XX.|XX.X.XX.|XX.XXXX.") +
+      "base" => Array.new(12, "b.bX.bb.|b.b.B.b.") + ["bX.X.bb.|b.b.B.b."],
+      "variations" => Array.new(4, "b.bX.bb.|X.bX.bX.") +
+                      Array.new(8, "b.AX.AX.|AX.AX.X.") +
+                      Array.new(2, "b.bX.bb.|X.XX.XX.") +
+                      Array.new(8, "B.BB.BB.|C.CC.CC.") +
+                      Array.new(2, "X.bX.bB.|XX.X.XX.|X.XX.XX.|XX.XXXX.") +
                       []
     },
     "sangban" => {
-      "base" => ["sangban: X.b.b.X.|X.b.b.X."],
+      "base" => ["X.b.b.X.|X.b.b.X."],
       "variations" => []
     },
     "kenken" => {
-      "base" => ["kenken: X.b.X.b.|X.b.X.b."],
+      "base" => ["X.b.X.b.|X.b.X.b."],
       "variations" => []
     },
     "djembe" => {
-      "base" => ["djembe: x.oo..x.|x.oo..x."],
-      "variations" => []
+      "base" => ["x.oo..x.|x.oo..x."],
+      "variations" => ["x.oxoox.|ox.xoox.", "x.oo..x.|ooxxooxx|x.oxoox.|ox.xoox."]
     }
   }
 }
