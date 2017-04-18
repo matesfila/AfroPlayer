@@ -3,7 +3,9 @@
 #Používateľská časť - premenné, s ktorými sa používateľ môže hrať#
 ##################################################################
 
-HUMANIZE_TIME = 0.01
+#TODO dočasne nastavené na nulu: kvoli posunom sa thready niekedy navzájom nepočkali
+HUMANIZE_TIME = 0
+
 HUMANIZE_DYNAMIC = 0.2
 HUMANIZE_PITCH = 0.005
 
@@ -31,12 +33,12 @@ SAMPLES = {
   "dunclos" => {"sample" => :drum_dundun, "amp" => 0.7, "rate" => 0.95, "pan" => -0.3,
                 "attack" => 0, "sustain" => 0, "release" => 0.18},
   "sangban" => {"sample" => :drum_sangban, "amp" => 4.8, "rate" => 0.9, "pan" => 0.1},
-  "sanclos" => {"sample" => :drum_sangban, "amp" => 0.7, "rate" => 1.15, "pan" => 0.1,
-                "attack" => 0, "sustain" => 0, "release" => 0.025},
+  "sanclos" => {"sample" => :drum_sangban, "amp" => 1.5, "rate" => 1.15, "pan" => 0.1,
+                "attack" => 0, "sustain" => 0, "release" => 0.15},
   "kenken" => {"sample" => :drum_kenkeni, "amp" => 4, "rate" => 1.1, "pan" => 0.02},
   "kenclos" => {"sample" => :drum_kenkeni, "amp" => 0.6, "rate" => 1.05, "pan" => 0.02,
-               "attack" => 0, "sustain" => 0, "release" => 0.13},
-  "dunbell" => {"sample" => :drum_dundun_bell, "amp" => 1.7, "rate" => 0.8, "pan" => -0.3},
+                "attack" => 0, "sustain" => 0, "release" => 0.13},
+  "dunbell" => {"sample" => :drum_dundun_bell, "amp" => 2.5, "rate" => 0.8, "pan" => -0.3},
   "sanbell" => {"sample" => :drum_sangban_bell, "amp" => 1.7, "rate" => 1, "pan" => 0.1},
   "kenbell" => {"sample" => :drum_kenkeni_bell, "amp" => 1.7, "rate" => 1.2, "pan" => 0.02},
   "djbass" => {"sample" => :DJEMBEBASS2, "amp" => 1, "rate" => 1, "pan" => 0},
@@ -74,7 +76,8 @@ INSTRUMENTS = {
 #       "base" => [],
 #       "variations" => []
 #     }
-#   }
+#   },
+#   "dependencies" => {}
 # }
 
 
@@ -159,6 +162,7 @@ end
 
 define :playPattern do |pattern: "", instrumentName: ""|
 
+
   iname = instrumentName
   drumOpen = INSTRUMENTS[iname]["open"]
   drumClosed = INSTRUMENTS[iname]["closed"]
@@ -168,7 +172,6 @@ define :playPattern do |pattern: "", instrumentName: ""|
   slap = INSTRUMENTS[iname]["slap"]
   pattern = patternParse(pattern)
 
-  sync :tick
   use_bpm @BPM
   pattern.each_char { |c|
     case
@@ -201,31 +204,45 @@ define :playPattern do |pattern: "", instrumentName: ""|
   }
 end
 
-define :findDependencies do |instrument: "", pattern: ""|
-  if pattern == "X.bb.bb.b.XX|.X.X.X.bXX.X"
-    return ["X.b.I.I.bX.b|X.X.X.X.bX.b"];
-  else
-    return []
-  end
-end
+# Globálna premenná orders. Ukladajú sa do nej komunikačné príkazy medzi
+# jednotlivými threadmi reprezentujúcimi konkrétny hudobný nástroj.
+# Príklad: dundun ide zahrať variáciu X, ku ktorej sangban má hrať variácu Y,
+# a tak dundun zadá cez premennú order príkaz sangbanu, aby zahral Y.
+orders = {}
 
 define :playLiveTrack do |trackName, rhythm, instrument|
+
+  
 
   basePatterns = rhythm["patterns"][instrument]["base"]
   variations = rhythm["patterns"][instrument]["variations"]
 
   in_thread(name: trackName) do
     loop do
+      sync :tick
       use_bpm @BPM
 
-      #((dice(2) - 1)*4).times do
-
-      x = 0
+      #ak neexistuje príkaz, vyber pattern
       variation = nil
       if (variations.size > 0)
         #t = aká variácia sa bude hrať, náhodný výber
         variation = variations[dice(variations.size) - 1]
+      end
 
+      #existuje závislosť na zvolenom patterne? Vytvor príkaz
+      if rhythm["dependencies"] != nil && rhythm["dependencies"][instrument] != nil
+        dependencies = rhythm["dependencies"][instrument][variation]
+        if dependencies != nil
+          dependencies.each do |key, value|
+            orders[key] = value
+          end
+          puts "orders = #{orders}"
+          #puts "#{rhythm["dependencies"][instrument]}"
+        end
+      end
+
+      x = 0
+      if variation != nil
         #x = koľkokrát sa základný pattern nachádza vo variácii (velkosť variácie...)
         #variácia nemôže byť menšia ako velkosť base patternu
         #basePatterns musia mat vsetky rovnaku velkost
@@ -234,11 +251,21 @@ define :playLiveTrack do |trackName, rhythm, instrument|
 
       #základný pattern sa zahrá príslušný počet krát
       (@VARCYCLE_LEN - x).times do
+        #existuje príkaz? Dodrž
+        #výber pattern
+        #existuje závislosť? Vytvor príkaz
         playPattern(pattern: basePatterns.choose, instrumentName: instrument)
       end
 
       #a na záver cyklu sa zahrá variácia
       if variation != nil
+
+        #existuje príkaz na variaciu? Dodrž ho. A odstráň, lebo už sa splní.
+        if orders[instrument] != nil
+          variation = orders[instrument]
+          orders.delete(instrument)
+        end
+
         playPattern(pattern: variation, instrumentName: instrument)
       end
     end
@@ -246,23 +273,24 @@ define :playLiveTrack do |trackName, rhythm, instrument|
 end
 
 define :playLive do
-  live_loop :songLoop do
-    cue :tick
-    if @PLAY_DUNDUN
-      playLiveTrack("dundunTrack", @RHYTHM, "dundun")
-    end
-    if @PLAY_SANGBAN
-      playLiveTrack("sangbanTrack", @RHYTHM, "sangban")
-    end
-    if @PLAY_KENKEN
-      playLiveTrack("kenkenTrack", @RHYTHM, "kenken")
-    end
-    if @PLAY_DJEMBE
-      playLiveTrack("djembeTrack", @RHYTHM, "djembe")
-    end
-    use_bpm @BPM
-    sleep DELAY * @RHYTHM_TIME[0]
+  if @PLAY_DUNDUN
+    playLiveTrack("dundunTrack", @RHYTHM, "dundun")
   end
+  if @PLAY_SANGBAN
+    playLiveTrack("sangbanTrack", @RHYTHM, "sangban")
+  end
+  if @PLAY_KENKEN
+    playLiveTrack("kenkenTrack", @RHYTHM, "kenken")
+  end
+  if @PLAY_DJEMBE
+    playLiveTrack("djembeTrack", @RHYTHM, "djembe")
+  end
+  loop do
+    cue :tick
+    use_bpm @BPM
+    sleep DELAY #* @RHYTHM_TIME[1]
+  end
+
 end
 
 playLive()
@@ -271,10 +299,24 @@ playLive()
 
 TODO
 - djembe sólovanie
-- notácia patternov, zamysleť sa aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
+    - v zátvorkách () bude skupina úderov, ktoré sa majú odohrať za jednu štvrťovú notu
+    (tj ak tam budú tri noty, zahrajú sa tri údery, ak 5 nôt, zahrá sa 5 úderov... veľká variabilita...)
+- notácia patternov
+    zamysleť sa aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
+    - zaviesť modifikátory nôt, bude na to potrebný inteligentnejší parser patternov:
+        - medzery budú povolené, ale prehrávačom patternu ignorované (budú iba pre používateľa)
+        - pred každou notou môže byť modifikátor, príklady modifikátorov:
+            < zahrá notu o niečo skôr, tj. skráti pauzu medzi notou vľavo a vpravo od modifikátora
+            ^ zahrá notu s väčšou razanciou, dynamikou
+            v zahrá notu s menšou razanciou, dynamikou
+        - keď vznikne obálka na náhodnosť úderov, bude sa dať náhodnosť aplikovať
+          aj na použitie modifikátora (tj modifikátor sa aplikuje na základe náhodnosti)
+
 - závislosti medzi patternami, spoločné variácie pre sangban a dundun
 - envelope: obálky, modifikátory pre patterny/tracky
 - inteligentnejší sampler: náhodné sample, vrstvy pre rôzne dynamiky
+    nápad: rôzne verzie samplu budú v jednom wav. V názve wav súboru bude povedané, či ide
+    o multisampel a podľa toho bude funkcia playSample vyberať/nevyberať náhodný sampel
 - inteligentnejší sequencer: ak sú dva/tri údery po sebe, vymysleť...
 
 Kompozícia patternu

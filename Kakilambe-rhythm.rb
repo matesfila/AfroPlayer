@@ -14,7 +14,7 @@
 @RHYTHM = {
   "patterns" => {
     "dundun" => {
-      "base" => ["X.X.X.bb.b.X|X.b.b.bb.b.b"],
+      "base" => ["X.X.X.bb.b.C|X.b.B.bA.b.C"],
       "variations" => ["X.XX.XX.XX.X|X.XX.XX.XX.X"]
     },
     "sangban" => {
@@ -27,7 +27,7 @@
     },
     "djembe" => {
       "base" => ["D.oox.Do.ox.|D.oox.Do.ox."],
-      "variations" => ["ooxooxooxoox|ooxooxooxoox"]
+      "variations" => ["ooxooxooxoox|ooxooxooxoox", "ooxooxooxoox|x.ooooxD.D.D"]
     }
   }
 }
