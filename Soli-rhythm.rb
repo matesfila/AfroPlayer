@@ -5,10 +5,10 @@
 @PLAY_DUNDUN = true
 @PLAY_SANGBAN = true
 @PLAY_KENKEN = true
-@PLAY_DJEMBE = false
+@PLAY_DJEMBE = true
 
-@BPM = 130
-@VARCYCLE_LEN = 4
+@BPM = 135
+@VARCYCLE_LEN = [4,8]
 @RHYTHM_TIME = [12,8] #dvanásť osminový rytmus
 @RHYTHM_SWING = (ring 0.03,-0.03, 0)
 

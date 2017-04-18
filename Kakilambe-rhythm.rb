@@ -8,14 +8,14 @@
 @PLAY_DJEMBE = true
 
 @BPM = 130
-@VARCYCLE_LEN = 4
+@VARCYCLE_LEN = [4]
 @RHYTHM_TIME = [24,8] #dvadsaťštyry osminový rytmus
 
 @RHYTHM = {
   "patterns" => {
     "dundun" => {
       "base" => ["X.X.X.bb.b.C|X.b.B.bA.b.C"],
-      "variations" => ["X.XX.XX.XX.X|X.XX.XX.XX.X"]
+      "variations" => ["XAXXAXXAXXAX|XAXXAXXAXXAX"]
     },
     "sangban" => {
       "base" => ["b.b.b.bX.X.b|b.b.X.bX.X.b"],

@@ -3,8 +3,8 @@
 #Používateľská časť - premenné, s ktorými sa používateľ môže hrať#
 ##################################################################
 
-#TODO dočasne nastavené na nulu: kvoli posunom sa thready niekedy navzájom nepočkali
-HUMANIZE_TIME = 0
+
+HUMANIZE_TIME = 0.0533
 
 HUMANIZE_DYNAMIC = 0.2
 HUMANIZE_PITCH = 0.005
@@ -82,10 +82,7 @@ INSTRUMENTS = {
 
 
 # Nastavenie defaultných hodnôt pre globálne premenné
-if @BPM == nil
-  @BPM = 95
-end
-
+@BPM ||= 95
 if @PLAY_DUNDUN == nil
   @PLAY_DUNDUN=true
 end
@@ -98,16 +95,9 @@ end
 if @PLAY_DJEMBE == nil
   @PLAY_DJEMBE=true
 end
-
-if @VARCYCLE_LEN == nil
-  @VARCYCLE_LEN=4
-end
-if @RHYTHM_TIME == nil
-  @RHYTHM_TIME=[8,4] #osem štvrťový rytmus
-end
-if @RHYTHM_SWING == nil
-  @RHYTHM_SWING=(ring 0,0,0,0)
-end
+@VARCYCLE_LEN ||= [4]
+@RHYTHM_TIME ||= [8,4]
+@RHYTHM_SWING ||= (ring 0,0,0,0)
 
 #regulárny výraz na hodnotu patternu, príklad: "x.b.x.b.|x.b.x.b."
 RGXP_PATTERN = /^([\.\|bXABCDIxo]+)$/
@@ -132,16 +122,14 @@ define :playSample do |instrument: {}, probability: 1|
   use_bpm @BPM
 
   if rand <= probability
-    with_fx :compressor do
-      with_fx :reverb, room:0.09, damp:1 do
-        sample instrument["sample"],
-          amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
-          pan: instrument["pan"],
-          rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
-          attack: instrument["attack"],
-          sustain: instrument["sustain"],
-          release: instrument["release"]
-      end
+    with_fx :reverb, room:0.09, damp:1 do
+      sample instrument["sample"],
+        amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
+        pan: instrument["pan"],
+        rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
+        attack: instrument["attack"],
+        sustain: instrument["sustain"],
+        release: instrument["release"]
     end
     return true
   else
@@ -173,6 +161,8 @@ define :playPattern do |pattern: "", instrumentName: ""|
   pattern = patternParse(pattern)
 
   use_bpm @BPM
+  sync :tick
+  h = 0
   pattern.each_char { |c|
     case
     when c == 'X'
@@ -200,7 +190,9 @@ define :playPattern do |pattern: "", instrumentName: ""|
       playSample(instrument: bell)
     when c == '.'
     end
-    sleep rand_around(DELAY + @RHYTHM_SWING.tick, HUMANIZE_TIME)
+    sleep h
+    h = rrand(0, HUMANIZE_TIME)
+    sleep DELAY + @RHYTHM_SWING.tick - h
   }
 end
 
@@ -210,18 +202,16 @@ end
 # a tak dundun zadá cez premennú order príkaz sangbanu, aby zahral Y.
 orders = {}
 
+# Globálna premenná varcycle_len určuje pre všetky nástroje aktuálnu dĺžku
+# cyklu pre variáciu.
+varcycle_len = @VARCYCLE_LEN.choose
+
 define :playLiveTrack do |trackName, rhythm, instrument|
-
-  
-
   basePatterns = rhythm["patterns"][instrument]["base"]
   variations = rhythm["patterns"][instrument]["variations"]
 
   in_thread(name: trackName) do
     loop do
-      sync :tick
-      use_bpm @BPM
-
       #ak neexistuje príkaz, vyber pattern
       variation = nil
       if (variations.size > 0)
@@ -250,7 +240,7 @@ define :playLiveTrack do |trackName, rhythm, instrument|
       end
 
       #základný pattern sa zahrá príslušný počet krát
-      (@VARCYCLE_LEN - x).times do
+      (varcycle_len - x).times do
         #existuje príkaz? Dodrž
         #výber pattern
         #existuje závislosť? Vytvor príkaz
@@ -272,6 +262,18 @@ define :playLiveTrack do |trackName, rhythm, instrument|
   end
 end
 
+define :playDirigent do
+#  cue :tick
+  in_thread(name: :dirigent) do
+    loop do
+      varcycle_len = @VARCYCLE_LEN.choose
+      use_bpm @BPM
+      cue :tick
+      sleep DELAY * @RHYTHM_TIME[0]
+    end
+  end
+end
+
 define :playLive do
   if @PLAY_DUNDUN
     playLiveTrack("dundunTrack", @RHYTHM, "dundun")
@@ -285,12 +287,7 @@ define :playLive do
   if @PLAY_DJEMBE
     playLiveTrack("djembeTrack", @RHYTHM, "djembe")
   end
-  loop do
-    cue :tick
-    use_bpm @BPM
-    sleep DELAY #* @RHYTHM_TIME[1]
-  end
-
+  playDirigent
 end
 
 playLive()
@@ -318,6 +315,8 @@ TODO
     nápad: rôzne verzie samplu budú v jednom wav. V názve wav súboru bude povedané, či ide
     o multisampel a podľa toho bude funkcia playSample vyberať/nevyberať náhodný sampel
 - inteligentnejší sequencer: ak sú dva/tri údery po sebe, vymysleť...
+- HUMANIZE_TIME by sa mal možno až exponenciálne zmenšovať so zmenšovaním dĺžky noty
+  (pre šestnástinové by teda humanize mal byť menší ako pre štvrtinové)
 
 Kompozícia patternu
 1) viacriadkové patterny (multipatterny)
