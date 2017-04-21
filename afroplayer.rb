@@ -96,7 +96,7 @@ if @PLAY_DJEMBE == nil
   @PLAY_DJEMBE=true
 end
 @VARCYCLE_LEN ||= [4]
-@RHYTHM_TIME ||= [8,4]
+@RHYTHM_TIME ||= [12,8]
 @RHYTHM_SWING ||= (ring 0,0,0,0)
 
 #regulárny výraz na hodnotu patternu, príklad: "x.b.x.b.|x.b.x.b."
@@ -105,14 +105,27 @@ RGXP_PATTERN = /^([\.\|bXABCDIxo]+)$/
 define :countNoteDelay do |note|
   #definuje dĺžku sleepu: pre štvrťové rytmy sa hrajú šestnástinové noty, pre trojkové sa hrajú osminové
   case
+  when note == 2
+    return 1.0 / 2
+  when note == 3
+    return 1.0 / 3
   when note == 4
-    return 1.0 / 2 / 2 #štvrťová nota na polovicu a na polovicu = šestnástinová nota
+    return 1.0 / 4
+  when note == 6
+    return 1.0 / 3
   when note == 8
-    return 1.0 / 3 #štvrťová nota na tretinu - tri osminové noty v jednej štvrťovej, hrajú sa osminky
+    return 1.0 / 4
+  when note == 12
+    return 1.0 / 3
   end
 end
 
-DELAY = countNoteDelay(@RHYTHM_TIME[1])
+define :countNoteDelay_new do |rhythm_time|
+    return 1.0 / (rhythm_time[0] / 4.0)
+end
+
+DELAY = countNoteDelay(@RHYTHM_TIME[0])
+#DELAY = countNoteDelay_new(@RHYTHM_TIME[0])
 
 define :rand_around do |v,r|
   return rrand(v-r, v+r)
@@ -186,15 +199,19 @@ end
 
 define :playPattern do |pattern: "", instrumentName: ""|
   use_bpm @BPM
-  sync :tick
   h = 0
-  pattern = patternParse(pattern)
-  pattern.each_char { |c|
-    playNote(note: c, instrument: INSTRUMENTS[instrumentName])
-    sleep h
-    h = rrand(0, HUMANIZE_TIME)
-    sleep DELAY + @RHYTHM_SWING.tick - h
-  }
+  #pattern = patternParse(pattern)
+  pattern.split(/\|/).each do |t|
+    sync :tick
+    t.each_char { |c|
+      playNote(note: c, instrument: INSTRUMENTS[instrumentName])
+      sleep h
+      h = rrand(0, HUMANIZE_TIME)
+      #sleep @RHYTHM_TIME[0]* 1.0 / t.length + @RHYTHM_SWING.tick - h
+      sleep DELAY * (1.0*@RHYTHM_TIME[0] / t.length) + @RHYTHM_SWING.tick - h
+      #sleep DELAY + @RHYTHM_SWING.tick - h
+    }
+  end
 end
 
 # Globálna premenná orders. Ukladajú sa do nej komunikačné príkazy medzi
@@ -267,6 +284,7 @@ define :playDirigent do
     loop do
       varcycle_len = @VARCYCLE_LEN.choose
       use_bpm @BPM
+      #sample  :drum_cymbal_closed #metronom
       cue :tick
       sleep DELAY * @RHYTHM_TIME[0]
     end

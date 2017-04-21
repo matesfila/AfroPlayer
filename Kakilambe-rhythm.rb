@@ -9,7 +9,7 @@
 
 @BPM = 130
 @VARCYCLE_LEN = [4]
-@RHYTHM_TIME = [24,8] #dvadsaťštyry osminový rytmus
+@RHYTHM_TIME = [12,8] #dvadsaťštyry osminový rytmus
 
 @RHYTHM = {
   "patterns" => {
