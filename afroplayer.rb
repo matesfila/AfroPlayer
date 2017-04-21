@@ -137,6 +137,42 @@ define :playSample do |instrument: {}, probability: 1|
   end
 end
 
+define :playNote do |note: "", instrument: {}|
+  drumOpen = instrument["open"]
+  drumClosed = instrument["closed"]
+  bell = instrument["bell"]
+  bass = instrument["bass"]
+  ton = instrument["ton"]
+  slap = instrument["slap"]
+  case
+  when note == 'X'
+    playSample(instrument: drumOpen, probability: 1)
+    playSample(instrument: bell)
+  when note == 'A'
+    playSample(instrument: drumOpen, probability: 0.12)
+    playSample(instrument: bell)
+  when note == 'B'
+    playSample(instrument: drumOpen, probability: 0.4)
+    playSample(instrument: bell)
+  when note == 'C'
+    playSample(instrument: drumOpen, probability: 0.8)
+    playSample(instrument: bell)
+  when note == 'I'
+    playSample(instrument: drumClosed, probability: 1)
+    playSample(instrument: bell)
+  when note == 'D'
+    playSample(instrument: bass, probability: 1)
+  when note == 'x'
+    playSample(instrument: slap, probability: 1)
+  when note == 'o'
+    playSample(instrument: ton, probability: 1)
+  when note == 'b'
+    playSample(instrument: bell)
+  when note == '.'
+  end
+
+end
+
 # Rozparsuje vstupný pattern.
 # +return+ Vráti pattern v stave iba s notami, bez pomocných symbolov.
 define :patternParse do |pattern|
@@ -149,47 +185,12 @@ define :patternSize do |pattern|
 end
 
 define :playPattern do |pattern: "", instrumentName: ""|
-
-
-  iname = instrumentName
-  drumOpen = INSTRUMENTS[iname]["open"]
-  drumClosed = INSTRUMENTS[iname]["closed"]
-  bell = INSTRUMENTS[iname]["bell"]
-  bass = INSTRUMENTS[iname]["bass"]
-  ton = INSTRUMENTS[iname]["ton"]
-  slap = INSTRUMENTS[iname]["slap"]
-  pattern = patternParse(pattern)
-
   use_bpm @BPM
   sync :tick
   h = 0
+  pattern = patternParse(pattern)
   pattern.each_char { |c|
-    case
-    when c == 'X'
-      playSample(instrument: drumOpen, probability: 1)
-      playSample(instrument: bell)
-    when c == 'A'
-      playSample(instrument: drumOpen, probability: 0.12)
-      playSample(instrument: bell)
-    when c == 'B'
-      playSample(instrument: drumOpen, probability: 0.4)
-      playSample(instrument: bell)
-    when c == 'C'
-      playSample(instrument: drumOpen, probability: 0.8)
-      playSample(instrument: bell)
-    when c == 'I'
-      playSample(instrument: drumClosed, probability: 1)
-      playSample(instrument: bell)
-    when c == 'D'
-      playSample(instrument: bass, probability: 1)
-    when c == 'x'
-      playSample(instrument: slap, probability: 1)
-    when c == 'o'
-      playSample(instrument: ton, probability: 1)
-    when c == 'b'
-      playSample(instrument: bell)
-    when c == '.'
-    end
+    playNote(note: c, instrument: INSTRUMENTS[instrumentName])
     sleep h
     h = rrand(0, HUMANIZE_TIME)
     sleep DELAY + @RHYTHM_SWING.tick - h
@@ -226,8 +227,6 @@ define :playLiveTrack do |trackName, rhythm, instrument|
           dependencies.each do |key, value|
             orders[key] = value
           end
-          puts "orders = #{orders}"
-          #puts "#{rhythm["dependencies"][instrument]}"
         end
       end
 
