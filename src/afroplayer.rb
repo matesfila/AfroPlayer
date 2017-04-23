@@ -4,10 +4,24 @@
 ##################################################################
 
 
-HUMANIZE_TIME = 0.0533
+HUMANIZE_TIME = 0.0133
 
 HUMANIZE_DYNAMIC = 0.2
 HUMANIZE_PITCH = 0.005
+
+#dĺžka základného cyklu: na konci každého základného cyklu sa zahrá variácia
+@VARCYCLE_LEN = [4]
+#či sa variácie vyberajú náhodne, alebo v poradí, v akom sú definované
+@RANDOM_VARIATIONS = false
+#minimálne koľkokrát sa zvolená variácia zopakuje
+@VAR_MINREPEAT = 1
+#maximálne koľkokrát sa zvolená variácia zopakuje
+@VAR_MAXREPEAT = 1
+
+@PLAY_DUNDUN = true
+@PLAY_SANGBAN = true
+@PLAY_KENKEN = true
+@PLAY_DJEMBE = true
 
 # SAMPLES = {
 #   "dundun" => {"sample" => :drum_tom_lo_hard, "amp" => 1.2, "rate" => 0.75, "pan" => -0.5, "sustain" => 0.18, "release" => 0.02},
@@ -96,7 +110,7 @@ if @PLAY_DJEMBE == nil
   @PLAY_DJEMBE=true
 end
 @VARCYCLE_LEN ||= [4]
-@RHYTHM_TIME ||= [12,8]
+@RHYTHM_TIME ||= [4,4]
 @RHYTHM_SWING ||= (ring 0,0,0,0)
 
 #regulárny výraz na hodnotu patternu, príklad: "x.b.x.b.|x.b.x.b."
@@ -228,16 +242,38 @@ define :playLiveTrack do |trackName, rhythm, instrument|
   basePatterns = rhythm["patterns"][instrument]["base"]
   variations = rhythm["patterns"][instrument]["variations"]
 
+  varIndex = -1;
+  varCount = 0
   in_thread(name: trackName) do
     loop do
-      #ak neexistuje príkaz, vyber pattern
+
       variation = nil
+      #výber variácie
       if (variations.size > 0)
-        #t = aká variácia sa bude hrať, náhodný výber
-        variation = variations[dice(variations.size) - 1]
+        if varCount >= @VAR_MINREPEAT
+          if @RANDOM_VARIATIONS
+            varIndexOld = varIndex
+            varIndex = dice(variations.size) - 1
+            if varIndexOld != varIndex
+              #meni sa variacia
+              varCount = 0
+            else #variacia ostava
+              if varCount >= @VAR_MAXREPEAT && variations.size > 1
+                #ak nemohla ostat ta ista variacia
+                while varIndex == varIndexOld do
+                  varIndex = dice(variations.size) - 1
+                end
+              end
+            end
+          else
+            varIndex = (varIndex + 1) % variations.size
+          end
+        end
+        variation = variations[varIndex]
+        varCount += 1
       end
 
-      #existuje závislosť na zvolenom patterne? Vytvor príkaz
+      #existuje závislosť na zvolenej variácii? Vytvor príkaz
       if rhythm["dependencies"] != nil && rhythm["dependencies"][instrument] != nil
         dependencies = rhythm["dependencies"][instrument][variation]
         if dependencies != nil
@@ -250,8 +286,9 @@ define :playLiveTrack do |trackName, rhythm, instrument|
       x = 0
       if variation != nil
         #x = koľkokrát sa základný pattern nachádza vo variácii (velkosť variácie...)
-        #variácia nemôže byť menšia ako velkosť base patternu
-        #basePatterns musia mat vsetky rovnaku velkost
+        #Podmienky funkčnosti tohto algoritmu:
+        # - variácia nemôže byť menšia ako velkosť base patternu
+        # - basePatterns musia mat vsetky rovnaku velkost
         x = patternSize(variation) / patternSize(basePatterns[0])
       end
 
@@ -325,7 +362,7 @@ TODO
             v zahrá notu s menšou razanciou, dynamikou
         - keď vznikne obálka na náhodnosť úderov, bude sa dať náhodnosť aplikovať
           aj na použitie modifikátora (tj modifikátor sa aplikuje na základe náhodnosti)
-
+- náhodnosť medzi dundun a nemu príslušný zvonček
 - závislosti medzi patternami, spoločné variácie pre sangban a dundun
 - envelope: obálky, modifikátory pre patterny/tracky
 - inteligentnejší sampler: náhodné sample, vrstvy pre rôzne dynamiky

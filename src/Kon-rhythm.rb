@@ -2,11 +2,6 @@
 ### SOLI ####
 #############
 
-@PLAY_DUNDUN = true
-@PLAY_SANGBAN = true
-@PLAY_KENKEN = true
-@PLAY_DJEMBE = true
-
 @BPM = 115
 @VARCYCLE_LEN = [4,8]
 @RHYTHM_TIME = [12,8] #dvanásť osminový rytmus
