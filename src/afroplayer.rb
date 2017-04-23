@@ -5,7 +5,6 @@
 
 
 HUMANIZE_TIME = 0.0133
-
 HUMANIZE_DYNAMIC = 0.2
 HUMANIZE_PITCH = 0.005
 
@@ -43,7 +42,7 @@ HUMANIZE_PITCH = 0.005
 # }
 
 SAMPLES = {
-  "dundun" => {"sample" => :drum_dundun, "amp" => 5, "rate" => 0.84, "pan" => -0.3},
+  "dundun" => {"sample" => :drum_dundun, "amp" => 4.5, "rate" => 0.84, "pan" => -0.3},
   "dunclos" => {"sample" => :drum_dundun, "amp" => 0.7, "rate" => 0.95, "pan" => -0.3,
                 "attack" => 0, "sustain" => 0, "release" => 0.18},
   "sangban" => {"sample" => :drum_sangban, "amp" => 4.8, "rate" => 0.9, "pan" => 0.1},
