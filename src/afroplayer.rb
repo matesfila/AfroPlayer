@@ -42,22 +42,22 @@ HUMANIZE_PITCH = 0.005
 # }
 
 SAMPLES = {
-  "dundun" => {"sample" => :drum_dundun, "amp" => 4.5, "rate" => 0.84, "pan" => -0.3},
+  "dundun" => {"sample" => :drum_dundun, "amp" => 2.5, "rate" => 0.74, "pan" => -0.3},
   "dunclos" => {"sample" => :drum_dundun, "amp" => 0.7, "rate" => 0.95, "pan" => -0.3,
                 "attack" => 0, "sustain" => 0, "release" => 0.18},
-  "sangban" => {"sample" => :drum_sangban, "amp" => 4.8, "rate" => 0.9, "pan" => 0.1},
+  "sangban" => {"sample" => :drum_sangban, "amp" => 2, "rate" => 0.9, "pan" => 0.1},
   "sanclos" => {"sample" => :drum_sangban, "amp" => 1.5, "rate" => 1.15, "pan" => 0.1,
                 "attack" => 0, "sustain" => 0, "release" => 0.15},
-  "kenken" => {"sample" => :drum_kenkeni, "amp" => 4, "rate" => 1.1, "pan" => 0.02},
+  "kenken" => {"sample" => :drum_kenkeni, "amp" => 2, "rate" => 1.1, "pan" => 0.02},
   "kenclos" => {"sample" => :drum_kenkeni, "amp" => 0.6, "rate" => 1.05, "pan" => 0.02,
                 "attack" => 0, "sustain" => 0, "release" => 0.13},
-  "dunbell" => {"sample" => :drum_dundun_bell, "amp" => 2.5, "rate" => 0.8, "pan" => -0.3},
-  "sanbell" => {"sample" => :drum_sangban_bell, "amp" => 1.7, "rate" => 1, "pan" => 0.1},
-  "kenbell" => {"sample" => :drum_kenkeni_bell, "amp" => 1.7, "rate" => 1.2, "pan" => 0.02},
-  "djbass" => {"sample" => :DJEMBEBASS2, "amp" => 1, "rate" => 1, "pan" => 0},
-  "djton" => {"sample" => :DJEMBE3, "amp" => 1, "rate" => 1, "pan" => 0},
-  "djslap" => {"sample" => :DJEMBESLAP3, "amp" => 1, "rate" => 1.1, "pan" => 0},
-  "djclos" => {"sample" => :DJEMBESLAP1, "amp" => 1, "rate" => 1, "pan" => 0}
+  "dunbell" => {"sample" => :drum_dundun_bell, "amp" => 1, "rate" => 0.8, "pan" => -0.3},
+  "sanbell" => {"sample" => :drum_sangban_bell, "amp" => 1, "rate" => 1, "pan" => 0.1},
+  "kenbell" => {"sample" => :drum_kenkeni_bell, "amp" => 1, "rate" => 1.2, "pan" => 0.02},
+  "djbass" => {"sample" => :DJEMBEBASS2, "amp" => 0.7, "rate" => 1, "pan" => 0},
+  "djton" => {"sample" => :DJEMBE3, "amp" => 0.7, "rate" => 1, "pan" => 0},
+  "djslap" => {"sample" => :DJEMBESLAP3, "amp" => 0.7, "rate" => 1.1, "pan" => 0},
+  "djclos" => {"sample" => :DJEMBESLAP1, "amp" => 0.7, "rate" => 1, "pan" => 0}
 }
 INSTRUMENTS = {
   "dundun" => {"open" => SAMPLES["dundun"], "closed" => SAMPLES["dunclos"], "bell" => SAMPLES["dunbell"]},
@@ -146,17 +146,15 @@ end
 
 define :playSample do |instrument: {}, probability: 1|
   use_bpm @BPM
-
+  
   if rand <= probability
-    with_fx :reverb, room:0.09, damp:1 do
-      sample instrument["sample"],
-        amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
-        pan: instrument["pan"],
-        rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
-        attack: instrument["attack"],
-        sustain: instrument["sustain"],
-        release: instrument["release"]
-    end
+    sample instrument["sample"],
+      amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
+      pan: instrument["pan"],
+      rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
+      attack: instrument["attack"],
+      sustain: instrument["sustain"],
+      release: instrument["release"]
     return true
   else
     return false
@@ -343,60 +341,6 @@ define :playLive do
   playDirigent
 end
 
-playLive()
-
-=begin
-
-TODO
-- djembe sólovanie
-    - v zátvorkách () bude skupina úderov, ktoré sa majú odohrať za jednu štvrťovú notu
-    (tj ak tam budú tri noty, zahrajú sa tri údery, ak 5 nôt, zahrá sa 5 úderov... veľká variabilita...)
-- notácia patternov
-    zamysleť sa aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
-    - zaviesť modifikátory nôt, bude na to potrebný inteligentnejší parser patternov:
-        - medzery budú povolené, ale prehrávačom patternu ignorované (budú iba pre používateľa)
-        - pred každou notou môže byť modifikátor, príklady modifikátorov:
-            < zahrá notu o niečo skôr, tj. skráti pauzu medzi notou vľavo a vpravo od modifikátora
-            ^ zahrá notu s väčšou razanciou, dynamikou
-            v zahrá notu s menšou razanciou, dynamikou
-        - keď vznikne obálka na náhodnosť úderov, bude sa dať náhodnosť aplikovať
-          aj na použitie modifikátora (tj modifikátor sa aplikuje na základe náhodnosti)
-- náhodnosť medzi dundun a nemu príslušný zvonček
-- závislosti medzi patternami, spoločné variácie pre sangban a dundun
-- envelope: obálky, modifikátory pre patterny/tracky
-- inteligentnejší sampler: náhodné sample, vrstvy pre rôzne dynamiky
-    nápad: rôzne verzie samplu budú v jednom wav. V názve wav súboru bude povedané, či ide
-    o multisampel a podľa toho bude funkcia playSample vyberať/nevyberať náhodný sampel
-- inteligentnejší sequencer: ak sú dva/tri údery po sebe, vymysleť...
-- HUMANIZE_TIME by sa mal možno až exponenciálne zmenšovať so zmenšovaním dĺžky noty
-  (pre šestnástinové by teda humanize mal byť menší ako pre štvrtinové)
-
-Kompozícia patternu
-1) viacriadkové patterny (multipatterny)
-  - pre spoločné variácie dundun+sangban
-  - ak v multipatterne nebude definovaný niektorý nástroj, zahrá sa jeho defaultný base pattern
-OK 2) pomenované nástroje
-OK 3) nástroj v patterne (podľa toho sa vyberie nástroj z pomenovaných nástrojov)
-
-Kompozícia skladby
-1) pomenované patterny (aby sa dalo odkazovať sa na ne a mohli sa skladať do kompozície/skladby)
-2) patterny v patternoch (vnorené patterny)
-3) tracky?
-
-VYRIEŠENÉ
-
-OK - nejako refaktornúť funkcie na prehranie patternu, aby algoritmus bol rovnaký pre dundun aj sangban aj kenken
-OK - doplniť možnosť konfigurovať ako často sa bude hrať variácia
-OK - vytvoriť sampler: podobne ako sa zadávajú patterny ako text, môže sa tak vytvoriť aj sampler, tj. konkrétny hudobný nástroj
-OK - počítať automaticky dĺžku variácie k dĺžke jedného cyklu a zahrať variáciu vždy na konci cyklu
-OK - implementovať swing feeling
-OK - uzavreté údery pre dunduny
-OK - djembe (zatial na úrovni dundunov, bez možnosti sól v zmenenom time)
-OK - afro sample (zatial narýchlo čo som našiel, neskôr zdokonaliť)
-
-Definícia rytmu
-OK - zadanie rytmu pre afroplayer pomocou hash tabuľky (imitácia definovania rytmu cez xml)
-  Pre používateľa sa môže potom neskôr vytvoriť viac user friendly zadanie, pre ktoré vznikne
-  kompilátor do zadania cez hash tabuľky
-
-=end
+with_fx :reverb, room:0.5, damp:0.5 do
+  playLive()
+end

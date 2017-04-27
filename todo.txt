@@ -1,0 +1,51 @@
+TODO
+- djembe sólovanie
+    - v zátvorkách () bude skupina úderov, ktoré sa majú odohrať za jednu štvrťovú notu
+    (tj ak tam budú tri noty, zahrajú sa tri údery, ak 5 nôt, zahrá sa 5 úderov... veľká variabilita...)
+- notácia patternov
+    zamysleť sa aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
+    - zaviesť modifikátory nôt, bude na to potrebný inteligentnejší parser patternov:
+        - medzery budú povolené, ale prehrávačom patternu ignorované (budú iba pre používateľa)
+        - pred každou notou môže byť modifikátor, príklady modifikátorov:
+            < zahrá notu o niečo skôr, tj. skráti pauzu medzi notou vľavo a vpravo od modifikátora
+            ^ zahrá notu s väčšou razanciou, dynamikou
+            v zahrá notu s menšou razanciou, dynamikou
+        - keď vznikne obálka na náhodnosť úderov, bude sa dať náhodnosť aplikovať
+          aj na použitie modifikátora (tj modifikátor sa aplikuje na základe náhodnosti)
+- náhodnosť medzi dundun a nemu príslušný zvonček
+- závislosti medzi patternami, spoločné variácie pre sangban a dundun
+- envelope: obálky, modifikátory pre patterny/tracky
+- inteligentnejší sampler: náhodné sample, vrstvy pre rôzne dynamiky
+    nápad: rôzne verzie samplu budú v jednom wav. V názve wav súboru bude povedané, či ide
+    o multisampel a podľa toho bude funkcia playSample vyberať/nevyberať náhodný sampel
+- inteligentnejší sequencer: ak sú dva/tri údery po sebe, vymysleť...
+- HUMANIZE_TIME by sa mal možno až exponenciálne zmenšovať so zmenšovaním dĺžky noty
+  (pre šestnástinové by teda humanize mal byť menší ako pre štvrtinové)
+
+Kompozícia patternu
+1) viacriadkové patterny (multipatterny)
+  - pre spoločné variácie dundun+sangban
+  - ak v multipatterne nebude definovaný niektorý nástroj, zahrá sa jeho defaultný base pattern
+OK 2) pomenované nástroje
+OK 3) nástroj v patterne (podľa toho sa vyberie nástroj z pomenovaných nástrojov)
+
+Kompozícia skladby
+1) pomenované patterny (aby sa dalo odkazovať sa na ne a mohli sa skladať do kompozície/skladby)
+2) patterny v patternoch (vnorené patterny)
+3) tracky?
+
+VYRIEŠENÉ
+
+OK - nejako refaktornúť funkcie na prehranie patternu, aby algoritmus bol rovnaký pre dundun aj sangban aj kenken
+OK - doplniť možnosť konfigurovať ako často sa bude hrať variácia
+OK - vytvoriť sampler: podobne ako sa zadávajú patterny ako text, môže sa tak vytvoriť aj sampler, tj. konkrétny hudobný nástroj
+OK - počítať automaticky dĺžku variácie k dĺžke jedného cyklu a zahrať variáciu vždy na konci cyklu
+OK - implementovať swing feeling
+OK - uzavreté údery pre dunduny
+OK - djembe (zatial na úrovni dundunov, bez možnosti sól v zmenenom time)
+OK - afro sample (zatial narýchlo čo som našiel, neskôr zdokonaliť)
+
+Definícia rytmu
+OK - zadanie rytmu pre afroplayer pomocou hash tabuľky (imitácia definovania rytmu cez xml)
+  Pre používateľa sa môže potom neskôr vytvoriť viac user friendly zadanie, pre ktoré vznikne
+  kompilátor do zadania cez hash tabuľky

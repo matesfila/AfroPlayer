@@ -1,8 +1,8 @@
 Rozbehanie sonic-pi-cli
 =======================
-- nainötalovaù https://rubyinstaller.org
-- daù ruby do cesty PATH
-- spustiù prÌkaz gem install sonic-pi-cli (viÔ https://github.com/Widdershin/sonic-pi-cli)
+- nain≈°talova≈• https://rubyinstaller.org
+- da≈• ruby do cesty PATH
+- spusti≈• pr√≠kaz gem install sonic-pi-cli (viƒè https://github.com/Widdershin/sonic-pi-cli)
 
 Funguje OK.
 
@@ -16,4 +16,4 @@ https://www.rust-lang.org/en-US/install.html
 
 cargo install --git https://github.com/lpil/sonic-pi-tool/
 
-Tento posledn˝ prÌkaz mi ale zlyhal, takûe sa mi to nepodarilo rozchodiù.
+Tento posledn√Ω pr√≠kaz mi ale zlyhal, tak≈æe sa mi to nepodarilo rozchodi≈•.
