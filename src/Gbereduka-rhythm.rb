@@ -17,8 +17,9 @@ san_base =  "XX.b.I.bI.b.|b.I.bI.bb.X.|" +
 
 ken_base = ".bX.XX.bX.XX"
 
-dj_base = "x.ox..x.ox..|x.ox..x.ox..|x.ox..x.ox..|x.ox..x.ox.."
-dj_base2 = "x..xoox..xoo|x..xoox..xoo|x..xoox..xoo|x..xoox..xoo"
+dj_base =  ["x.ox..x.ox.."].cycle(8).to_a.join('|')
+dj_base2 = ["x..xoox..xoo"].cycle(8).to_a.join('|')
+dj_base3 = ["............"].cycle(8).to_a.join('|')
 
 @RHYTHM = {
   "patterns" => {
@@ -36,7 +37,7 @@ dj_base2 = "x..xoox..xoo|x..xoox..xoo|x..xoox..xoo|x..xoox..xoo"
       "variations" => []
     },
     "djembe" => {
-      "base" => [dj_base, dj_base2],
+      "base" => [dj_base, dj_base, dj_base2, dj_base3, dj_base3],
       "variations" => []
     }
   },
