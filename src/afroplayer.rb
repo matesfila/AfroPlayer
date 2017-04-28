@@ -264,6 +264,7 @@ define :playLiveTrack do |trackName, rhythm, instrument|
             end
           else
             varIndex = (varIndex + 1) % variations.size
+			varCount = 0
           end
         end
         variation = variations[varIndex]
