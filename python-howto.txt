@@ -1,0 +1,13 @@
+
+Rozbehanie sonic pi s python
+============================
+https://www.python.org/downloads/windows/
+pip install python-osc
+pip install python-sonic
+
+
+Vytvorenie z python skriptu exe
+===============================
+pip install cx_Freeze
+...\usr\Python\Python36-32\Scripts\cxfreeze-postinstall
+cxfreeze.bat sonicpy.py
