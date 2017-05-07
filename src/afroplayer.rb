@@ -41,29 +41,35 @@ HUMANIZE_PITCH = 0.005
 #   "djclos" => {"sample" => :DJEMBESLAP1, "amp" => 1.5, "rate" => 1, "pan" => 0}
 # }
 
+define :multiSample do |sampleName, count|
+  Array.new(count) {|i| (sampleName + (i+1).to_s).to_sym }
+end
+
 SAMPLES = {
-  "dundun" => {"sample" => :drum_dundun, "amp" => 2.5, "rate" => 0.74, "pan" => -0.3},
-  "dunclos" => {"sample" => :drum_dundun, "amp" => 0.7, "rate" => 0.95, "pan" => -0.3,
-                "attack" => 0, "sustain" => 0, "release" => 0.18},
-  "sangban" => {"sample" => :drum_sangban, "amp" => 2, "rate" => 0.9, "pan" => 0.1},
-  "sanclos" => {"sample" => :drum_sangban, "amp" => 1.5, "rate" => 1.15, "pan" => 0.1,
-                "attack" => 0, "sustain" => 0, "release" => 0.15},
-  "kenken" => {"sample" => :drum_kenkeni, "amp" => 2, "rate" => 1.1, "pan" => 0.02},
-  "kenclos" => {"sample" => :drum_kenkeni, "amp" => 0.6, "rate" => 1.05, "pan" => 0.02,
-                "attack" => 0, "sustain" => 0, "release" => 0.13},
-  "dunbell" => {"sample" => :drum_dundun_bell, "amp" => 1, "rate" => 0.8, "pan" => -0.3},
-  "sanbell" => {"sample" => :drum_sangban_bell, "amp" => 1, "rate" => 1, "pan" => 0.1},
-  "kenbell" => {"sample" => :drum_kenkeni_bell, "amp" => 1, "rate" => 1.2, "pan" => 0.02},
-  "djbass" => {"sample" => :DJEMBEBASS2, "amp" => 0.7, "rate" => 1, "pan" => 0},
-  "djton" => {"sample" => :DJEMBE3, "amp" => 0.7, "rate" => 1, "pan" => 0},
-  "djslap" => {"sample" => :DJEMBESLAP3, "amp" => 0.7, "rate" => 1.1, "pan" => 0},
-  "djclos" => {"sample" => :DJEMBESLAP1, "amp" => 0.7, "rate" => 1, "pan" => 0}
+  "dundun" => {"sample" => multiSample("dundun_s2_v", 5), "amp" => 2.5, "rate" => 0.74, "pan" => -0.3},
+  "dunclos" => {"sample" => multiSample("dundun_closed_v", 6), "amp" => 3, "rate" => 0.9, "pan" => 0.1},
+  "sangban" => {"sample" => multiSample("sangban_s2_v", 7), "amp" => 2, "rate" => 0.9, "pan" => 0.1},
+  "sanclos" => {"sample" => multiSample("sangban_closed_v", 6), "amp" => 3, "rate" => 0.9, "pan" => 0.1},
+  "kenken" => {"sample" => multiSample("kenkeni_s2_v", 7), "amp" => 2, "rate" => 1.1, "pan" => 0.02},
+  "kenclos" => {"sample" => multiSample("kenkeni_closed_v", 6), "amp" => 3, "rate" => 0.9, "pan" => 0.1},
+  "dunbell" => {"sample" => multiSample("dundun_bell_open_v", 4), "amp" => 0.8, "rate" => 0.8, "pan" => -0.3},
+  "sanbell" => {"sample" => multiSample("sangban_bell_open_v", 5), "amp" => 1, "rate" => 1, "pan" => 0.1},
+  "kenbell" => {"sample" => multiSample("kenkeni_bell_open_v", 3), "amp" => 1.3, "rate" => 1.2, "pan" => 0.02},
+  "djbass" => {"sample" => [:dj_tm_bass], "amp" => 1.7, "rate" => 1, "pan" => 0},
+  "djton" => {"sample" => multiSample("dj_tm_ton_v", 6), "amp" => 1.7, "rate" => 1, "pan" => 0},
+  "djslap" => {"sample" => multiSample("dj_tm_slap_v", 8), "amp" => 1.7, "rate" => 1, "pan" => 0},
+  "djclos" => {"sample" => multiSample("dj_tm_tonclos_v", 3), "amp" => 1.7, "rate" => 1, "pan" => 0},
+  "dj2_bass" => {"sample" => [:DJEMBEBASS2], "amp" => 0.7, "rate" => 1, "pan" => 0},
+  "dj2_ton" => {"sample" => [:DJEMBE2,:DJEMBE3], "amp" => 0.7, "rate" => 1, "pan" => 0},
+  "dj2_slap" => {"sample" => [:DJEMBESLAP2,:DJEMBESLAP3,:DJEMBESLAP4], "amp" => 0.7, "rate" => 1.1, "pan" => 0},
+  "dj2_clos" => {"sample" => [:DJEMBESLAP1], "amp" => 0.7, "rate" => 1, "pan" => 0}
 }
 INSTRUMENTS = {
   "dundun" => {"open" => SAMPLES["dundun"], "closed" => SAMPLES["dunclos"], "bell" => SAMPLES["dunbell"]},
   "sangban" => {"open" => SAMPLES["sangban"], "closed" => SAMPLES["sanclos"], "bell" => SAMPLES["sanbell"]},
   "kenken" => {"open" => SAMPLES["kenken"], "closed" => SAMPLES["kenclos"], "bell" => SAMPLES["kenbell"]},
-  "djembe" => {"bass" => SAMPLES["djbass"], "ton" => SAMPLES["djton"], "slap" => SAMPLES["djslap"], "closed" => SAMPLES["djclos"]}
+  "djembe" => {"bass" => SAMPLES["djbass"], "ton" => SAMPLES["djton"], "slap" => SAMPLES["djslap"], "closed" => SAMPLES["djclos"]},
+  "djembe2" => {"bass" => SAMPLES["dj2_bass"], "ton" => SAMPLES["dj2_ton"], "slap" => SAMPLES["dj2_slap"], "closed" => SAMPLES["dj2_clos"]}
 }
 
 ####################################################
@@ -146,9 +152,9 @@ end
 
 define :playSample do |instrument: {}, probability: 1|
   use_bpm @BPM
-  
+
   if rand <= probability
-    sample instrument["sample"],
+    sample instrument["sample"].choose,
       amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
       pan: instrument["pan"],
       rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
@@ -264,7 +270,7 @@ define :playLiveTrack do |trackName, rhythm, instrument|
             end
           else
             varIndex = (varIndex + 1) % variations.size
-			varCount = 0
+            varCount = 0
           end
         end
         variation = variations[varIndex]
@@ -339,9 +345,12 @@ define :playLive do
   if @PLAY_DJEMBE
     playLiveTrack("djembeTrack", @RHYTHM, "djembe")
   end
+  #if @PLAY_DJEMBE
+    #playLiveTrack("djembe2Track", @RHYTHM, "djembe2")
+  #end
   playDirigent
 end
 
-with_fx :reverb, room:0.5, damp:0.5 do
+with_fx :reverb, room:0.2, damp:0.5 do
   playLive()
 end

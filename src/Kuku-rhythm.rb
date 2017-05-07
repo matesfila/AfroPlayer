@@ -21,12 +21,17 @@
       "variations" => []
     },
     "kenken" => {
-      "base" => ["X.b.X.b.|X.b.X.b."],
+      #"base" => ["X.b.X.b.|X.b.X.b."],
+      "base" => ["XX..XX..|XX..XX.."],
       "variations" => []
     },
     "djembe" => {
       "base" => ["x.oo..x.|x.oo..x."],
       "variations" => ["x.oxoox.|ox.xoox.", "x.oo..x.|ooxxooxx|x.oxoox.|ox.xoox."]
+    },
+    "djembe2" => {
+      "base" => ["x.D.oo..|x.D.oo.."],
+      "variations" => []
     }
   }
 }

@@ -15,12 +15,11 @@ TODO
 - náhodnosť medzi dundun a nemu príslušný zvonček
 - závislosti medzi patternami, spoločné variácie pre sangban a dundun
 - envelope: obálky, modifikátory pre patterny/tracky
-- inteligentnejší sampler: náhodné sample, vrstvy pre rôzne dynamiky
-    nápad: rôzne verzie samplu budú v jednom wav. V názve wav súboru bude povedané, či ide
-    o multisampel a podľa toho bude funkcia playSample vyberať/nevyberať náhodný sampel
+- inteligentnejší sampler: vrstvy pre rôzne dynamiky
 - inteligentnejší sequencer: ak sú dva/tri údery po sebe, vymysleť...
 - HUMANIZE_TIME by sa mal možno až exponenciálne zmenšovať so zmenšovaním dĺžky noty
   (pre šestnástinové by teda humanize mal byť menší ako pre štvrtinové)
+- problém zvončeka pri náhodných úderoch: ak sa náhodný úder na dundun nezahrá, má s zvonček aj tak zahrať, alebo nemá ???
 
 Kompozícia patternu
 1) viacriadkové patterny (multipatterny)
@@ -44,6 +43,10 @@ OK - implementovať swing feeling
 OK - uzavreté údery pre dunduny
 OK - djembe (zatial na úrovni dundunov, bez možnosti sól v zmenenom time)
 OK - afro sample (zatial narýchlo čo som našiel, neskôr zdokonaliť)
+OK - inteligentnejší sampler: náhodné sample
+    nápad: rôzne verzie samplu budú v jednom wav. V názve wav súboru bude povedané, či ide
+    o multisampel a podľa toho bude funkcia playSample vyberať/nevyberať náhodný sampel
+	- nápad zatial nebol realizovaný, každý sampel je v samostatnom súbore. Bolo príliš pracné spracovať jedno wav, kde by každý sampel začínal od presne daného času.
 
 Definícia rytmu
 OK - zadanie rytmu pre afroplayer pomocou hash tabuľky (imitácia definovania rytmu cez xml)

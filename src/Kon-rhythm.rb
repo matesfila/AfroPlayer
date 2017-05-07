@@ -15,7 +15,7 @@ san_var1 = "I.bb.bb.X.bX|.X.X.X.bXX.b"
 
 ken_base = ".bX.XX.bX.XX"
 
-dj_base = "x.ox.Dx.ox.."
+dj_base = "x.ox..x.ox.."
 
 @RHYTHM = {
   "patterns" => {
