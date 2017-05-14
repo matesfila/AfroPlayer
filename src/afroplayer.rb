@@ -11,11 +11,16 @@ HUMANIZE_PITCH = 0.005
 #dĺžka základného cyklu: na konci každého základného cyklu sa zahrá variácia
 @VARCYCLE_LEN = [4]
 #či sa variácie vyberajú náhodne, alebo v poradí, v akom sú definované
-@RANDOM_VARIATIONS = false
+@VAR_RANDOMSELECT = false
 #minimálne koľkokrát sa zvolená variácia zopakuje
 @VAR_MINREPEAT = 1
 #maximálne koľkokrát sa zvolená variácia zopakuje
-@VAR_MAXREPEAT = 1
+@VAR_MAXREPEAT = 2
+
+#@BREAK_CYCLELEN = [16]
+#@RANDOM_BREAKS = false
+#@BREAK_MINREPEAT = 1
+#@BREAK_MAXREPEAT = 1
 
 TRACKS = {
   #pre solo a mute: 0 = false, 1 = true, skrateny zapis
@@ -31,7 +36,7 @@ TRACKS = {
 #   "dunclos" => {"sample" => :drum_tom_lo_hard, "amp" => 0.7, "rate" => 0.95, "pan" => -0.5,
 #                 "attack" => 0, "sustain" => 0, "release" => 0.18},
 #   "sangban" => {"sample" => :drum_tom_mid_hard, "amp" => 1.2, "rate" => 1, "pan" => 0.5},
-#   "sanclos" => {"sample" => :drum_tom_mid_hard, "amp" => 0.7, "rate" => 1.15, "pan" => 0.5,
+#   "sanclos" => {"sample" => :drum_tom_mid _hard, "amp" => 0.7, "rate" => 1.15, "pan" => 0.5,
 #                 "attack" => 0, "sustain" => 0, "release" => 0.025},
 #   "kenken" => {"sample" => :drum_tom_hi_soft, "amp" => 4, "rate" => 1.55, "pan" => 0.2, "sustain" => 0.15, "release" => 0.03},
 #   "kenclos" => {"sample" => :drum_tom_hi_hard, "amp" => 0.6, "rate" => 1.5, "pan" => 0.2,
@@ -249,45 +254,50 @@ orders = {}
 # cyklu pre variáciu.
 varcycle_len = @VARCYCLE_LEN.choose
 
-define :playLiveTrack do |trackName, rhythm, instrument|
-  basePatterns = rhythm["patterns"][instrument]["base"]
-  variations = rhythm["patterns"][instrument]["variations"]
+define :playLiveTrack do |trackName, rhythm, instrumentName|
+  basePatterns = rhythm["patterns"][instrumentName]["base"]
+  variations = rhythm["patterns"][instrumentName]["variations"]
 
-  varIndex = -1;
-  varCount = 0
+  #variationsToPlay = zoznam variácií, ktoré sa budú hrať
+  variationsToPlay = Queue.new
+  #lastVariation = variácia, ktorá sa hrala naposledy
+  lastVariation = nil
   in_thread(name: trackName) do
     loop do
-
       variation = nil
       #výber variácie
       if (variations.size > 0)
-        if varCount >= @VAR_MINREPEAT
-          if @RANDOM_VARIATIONS
-            varIndexOld = varIndex
-            varIndex = dice(variations.size) - 1
-            if varIndexOld != varIndex
-              #meni sa variacia
-              varCount = 0
-            else #variacia ostava
-              if varCount >= @VAR_MAXREPEAT && variations.size > 1
-                #ak nemohla ostat ta ista variacia
-                while varIndex == varIndexOld do
-                  varIndex = dice(variations.size) - 1
-                end
+        #ak je zoznam variácie na hranie už prázdny, tak sa naplní
+        if variationsToPlay.empty?
+          varToPlay = nil #variácia, ktorá sa bude pridávať do variationsToPlay (index)
+          if @VAR_RANDOMSELECT
+            if (variations.size == 1)
+              variation = nil #v nasl sa teda nebude hrat variacia
+              varToPlay = 0
+            elsif (variations.size > 1)
+              varToPlay = dice(variations.size) - 1
+              while varToPlay == lastVariation do
+                varToPlay = dice(variations.size) - 1
               end
             end
           else
-            varIndex = (varIndex + 1) % variations.size
-            varCount = 0
+            varToPlay = ((lastVariation || -1) + 1) % variations.size
+          end
+          rrand_i(@VAR_MINREPEAT, @VAR_MAXREPEAT).times do
+            variationsToPlay << varToPlay
           end
         end
-        variation = variations[varIndex]
-        varCount += 1
+        variation = variationsToPlay.pop
+        lastVariation = variation
+        if (variation != nil)
+          #premenná variation sa preklopí z indexu na samotnú variáciu:
+          variation = variations[variation]
+        end
       end
 
       #existuje závislosť na zvolenej variácii? Vytvor príkaz
-      if rhythm["dependencies"] != nil && rhythm["dependencies"][instrument] != nil
-        dependencies = rhythm["dependencies"][instrument][variation]
+      if rhythm["dependencies"] != nil && rhythm["dependencies"][instrumentName] != nil
+        dependencies = rhythm["dependencies"][instrumentName][variation]
         if dependencies != nil
           dependencies.each do |key, value|
             orders[key] = value
@@ -309,19 +319,19 @@ define :playLiveTrack do |trackName, rhythm, instrument|
         #existuje príkaz? Dodrž
         #výber pattern
         #existuje závislosť? Vytvor príkaz
-        playPattern(pattern: basePatterns.choose, instrumentName: instrument)
+        playPattern(pattern: basePatterns.choose, instrumentName: instrumentName)
       end
 
       #a na záver cyklu sa zahrá variácia
       if variation != nil
 
         #existuje príkaz na variaciu? Dodrž ho. A odstráň, lebo už sa splní.
-        if orders[instrument] != nil
-          variation = orders[instrument]
-          orders.delete(instrument)
+        if orders[instrumentName] != nil
+          variation = orders[instrumentName]
+          orders.delete(instrumentName)
         end
 
-        playPattern(pattern: variation, instrumentName: instrument)
+        playPattern(pattern: variation, instrumentName: instrumentName)
       end
     end
   end
