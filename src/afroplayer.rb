@@ -17,10 +17,14 @@ HUMANIZE_PITCH = 0.005
 #maximálne koľkokrát sa zvolená variácia zopakuje
 @VAR_MAXREPEAT = 1
 
-@PLAY_DUNDUN = true
-@PLAY_SANGBAN = true
-@PLAY_KENKEN = true
-@PLAY_DJEMBE = true
+TRACKS = {
+  #pre solo a mute: 0 = false, 1 = true, skrateny zapis
+  "dundunTrack" => {"instrumentName" => "dundun", "solo" => 0, "mute" => 0},
+  "sangbanTrack" => {"instrumentName" => "sangban", "solo" => 0, "mute" => 0},
+  "kenkenTrack" => {"instrumentName" => "kenken", "solo" => 0, "mute" => 0},
+  "djembeTrack" => {"instrumentName" => "djembe", "solo" => 0, "mute" => 0},
+  "djembe2Track" => {"instrumentName" => "djembe2", "solo" => 0, "mute" => 1}
+}
 
 # SAMPLES = {
 #   "dundun" => {"sample" => :drum_tom_lo_hard, "amp" => 1.2, "rate" => 0.75, "pan" => -0.5, "sustain" => 0.18, "release" => 0.02},
@@ -41,6 +45,7 @@ HUMANIZE_PITCH = 0.005
 #   "djclos" => {"sample" => :DJEMBESLAP1, "amp" => 1.5, "rate" => 1, "pan" => 0}
 # }
 
+# Vytvorí pole s obsahom [sampleName1, sampleName2 ... sampleNameN] kde N = count
 define :multiSample do |sampleName, count|
   Array.new(count) {|i| (sampleName + (i+1).to_s).to_sym }
 end
@@ -55,15 +60,16 @@ SAMPLES = {
   "dunbell" => {"sample" => multiSample("dundun_bell_open_v", 4), "amp" => 0.8, "rate" => 0.8, "pan" => -0.3},
   "sanbell" => {"sample" => multiSample("sangban_bell_open_v", 5), "amp" => 1, "rate" => 1, "pan" => 0.1},
   "kenbell" => {"sample" => multiSample("kenkeni_bell_open_v", 3), "amp" => 1.3, "rate" => 1.2, "pan" => 0.02},
-  "djbass" => {"sample" => [:dj_tm_bass], "amp" => 1.7, "rate" => 1, "pan" => 0},
-  "djton" => {"sample" => multiSample("dj_tm_ton_v", 6), "amp" => 1.7, "rate" => 1, "pan" => 0},
-  "djslap" => {"sample" => multiSample("dj_tm_slap_v", 8), "amp" => 1.7, "rate" => 1, "pan" => 0},
-  "djclos" => {"sample" => multiSample("dj_tm_tonclos_v", 3), "amp" => 1.7, "rate" => 1, "pan" => 0},
-  "dj2_bass" => {"sample" => [:DJEMBEBASS2], "amp" => 0.7, "rate" => 1, "pan" => 0},
-  "dj2_ton" => {"sample" => [:DJEMBE2,:DJEMBE3], "amp" => 0.7, "rate" => 1, "pan" => 0},
-  "dj2_slap" => {"sample" => [:DJEMBESLAP2,:DJEMBESLAP3,:DJEMBESLAP4], "amp" => 0.7, "rate" => 1.1, "pan" => 0},
-  "dj2_clos" => {"sample" => [:DJEMBESLAP1], "amp" => 0.7, "rate" => 1, "pan" => 0}
+  "djbass" => {"sample" => [:dj_tm_bass], "amp" => 1, "rate" => 1, "pan" => 0},
+  "djton" => {"sample" => multiSample("dj_tm_ton_v", 6), "amp" => 2, "rate" => 1, "pan" => 0},
+  "djslap" => {"sample" => multiSample("dj_tm_slap_v", 8), "amp" => 2, "rate" => 1, "pan" => 0},
+  "djclos" => {"sample" => multiSample("dj_tm_tonclos_v", 3), "amp" => 2, "rate" => 1, "pan" => 0},
+  "dj2_bass" => {"sample" => [:DJEMBEBASS2], "amp" => 0.5, "rate" => 1, "pan" => 0},
+  "dj2_ton" => {"sample" => [:DJEMBE2,:DJEMBE3], "amp" => 0.5, "rate" => 1, "pan" => 0},
+  "dj2_slap" => {"sample" => [:DJEMBESLAP2,:DJEMBESLAP3,:DJEMBESLAP4], "amp" => 0.5, "rate" => 1.1, "pan" => 0},
+  "dj2_clos" => {"sample" => [:DJEMBESLAP1], "amp" => 0.5, "rate" => 1, "pan" => 0}
 }
+
 INSTRUMENTS = {
   "dundun" => {"open" => SAMPLES["dundun"], "closed" => SAMPLES["dunclos"], "bell" => SAMPLES["dunbell"]},
   "sangban" => {"open" => SAMPLES["sangban"], "closed" => SAMPLES["sanclos"], "bell" => SAMPLES["sanbell"]},
@@ -99,27 +105,14 @@ INSTRUMENTS = {
 #   "dependencies" => {}
 # }
 
-
 # Nastavenie defaultných hodnôt pre globálne premenné
 @BPM ||= 95
-if @PLAY_DUNDUN == nil
-  @PLAY_DUNDUN=true
-end
-if @PLAY_SANGBAN == nil
-  @PLAY_SANGBAN=true
-end
-if @PLAY_KENKEN == nil
-  @PLAY_KENKEN=true
-end
-if @PLAY_DJEMBE == nil
-  @PLAY_DJEMBE=true
-end
 @VARCYCLE_LEN ||= [4]
 @RHYTHM_TIME ||= [4,4]
 @RHYTHM_SWING ||= (ring 0,0,0,0)
 
-#regulárny výraz na hodnotu patternu, príklad: "x.b.x.b.|x.b.x.b."
-RGXP_PATTERN = /^([\.\|bXABCDIxo]+)$/
+#regulárny výraz na hodnotu patternu, príklad: "kenken: x.b.x.b.|x.b.x.b."
+RGXP_PATTERN = /^(\w+):\s+([\.\|bXABCDIixyop]+)$/
 
 define :countNoteDelay do |note|
   #definuje dĺžku sleepu: pre štvrťové rytmy sa hrajú šestnástinové noty, pre trojkové sa hrajú osminové
@@ -139,12 +132,7 @@ define :countNoteDelay do |note|
   end
 end
 
-define :countNoteDelay_new do |rhythm_time|
-    return 1.0 / (rhythm_time[0] / 4.0)
-end
-
 DELAY = countNoteDelay(@RHYTHM_TIME[0])
-#DELAY = countNoteDelay_new(@RHYTHM_TIME[0])
 
 define :rand_around do |v,r|
   return rrand(v-r, v+r)
@@ -167,51 +155,71 @@ define :playSample do |instrument: {}, probability: 1|
   end
 end
 
-define :playNote do |note: "", instrument: {}|
-  drumOpen = instrument["open"]
-  drumClosed = instrument["closed"]
-  bell = instrument["bell"]
-  bass = instrument["bass"]
-  ton = instrument["ton"]
-  slap = instrument["slap"]
+define :playNote do |note: "", instrument: {}, instrumentName: ""|
+
   case
-  when note == 'X'
-    playSample(instrument: drumOpen, probability: 1)
-    playSample(instrument: bell)
-  when note == 'A'
-    playSample(instrument: drumOpen, probability: 0.12)
-    playSample(instrument: bell)
-  when note == 'B'
-    playSample(instrument: drumOpen, probability: 0.4)
-    playSample(instrument: bell)
-  when note == 'C'
-    playSample(instrument: drumOpen, probability: 0.8)
-    playSample(instrument: bell)
-  when note == 'I'
-    playSample(instrument: drumClosed, probability: 1)
-    playSample(instrument: bell)
-  when note == 'D'
-    playSample(instrument: bass, probability: 1)
-  when note == 'x'
-    playSample(instrument: slap, probability: 1)
-  when note == 'o'
-    playSample(instrument: ton, probability: 1)
-  when note == 'b'
-    playSample(instrument: bell)
-  when note == '.'
+  when ["dundun", "sangban", "kenken"].include?(instrumentName)
+    drumOpen = instrument["open"]
+    drumClosed = instrument["closed"]
+    bell = instrument["bell"]
+    case
+    when note == 'X' || note == 'x'
+      playSample(instrument: drumOpen, probability: 1)
+      playSample(instrument: bell)
+    when note == 'A'
+      if playSample(instrument: drumOpen, probability: 0.12)
+        playSample(instrument: bell)
+      end
+    when note == 'B'
+      if playSample(instrument: drumOpen, probability: 0.4)
+        playSample(instrument: bell)
+      end
+    when note == 'C'
+      if playSample(instrument: drumOpen, probability: 0.8)
+        playSample(instrument: bell)
+      end
+    when note == 'I' || note == 'i'
+      playSample(instrument: drumClosed, probability: 1)
+      playSample(instrument: bell)
+    when note == 'b'
+      playSample(instrument: bell)
+    when note == '.'
+    end
+
+  when ["djembe", "djembe2"].include?(instrumentName)
+    bass = instrument["bass"]
+    ton = instrument["ton"]
+    slap = instrument["slap"]
+    closed = instrument["closed"]
+    case
+    when note == 'D'
+      playSample(instrument: bass, probability: 1)
+    when note == 'x'
+      playSample(instrument: slap, probability: 1)
+    when note == 'y'
+      playSample(instrument: slap, probability: 0.12)
+    when note == 'o'
+      playSample(instrument: ton, probability: 1)
+    when note == 'p'
+      playSample(instrument: ton, probability: 0.12)
+    when note == 'i'
+      playSample(instrument: closed, probability: 1)
+    when note == 'b'
+      playSample(instrument: bell)
+    when note == '.'
+    end
   end
-
 end
 
-# Rozparsuje vstupný pattern.
-# +return+ Vráti pattern v stave iba s notami, bez pomocných symbolov.
-define :patternParse do |pattern|
-  m = pattern.match(RGXP_PATTERN)
-  return m[1].delete("|")
-end
+# Rozparsuje vstupný pattern, ktorý je na vstupe v surovom stave.
+# +return+ Vráti mapu s kľúčmi instrumentName a pattern
+# define :patternParse do |pattern|
+#   m = pattern.match(RGXP_PATTERN)
+#   return {"instrumentName" => m[1], "pattern" => m[2]}
+# end
 
 define :patternSize do |pattern|
-  return patternParse(pattern).length()
+  return pattern.delete("|").length()
 end
 
 define :playPattern do |pattern: "", instrumentName: ""|
@@ -221,7 +229,7 @@ define :playPattern do |pattern: "", instrumentName: ""|
   pattern.split(/\|/).each do |t|
     sync :tick
     t.each_char { |c|
-      playNote(note: c, instrument: INSTRUMENTS[instrumentName])
+      playNote(note: c, instrument: INSTRUMENTS[instrumentName], instrumentName: instrumentName)
       sleep h
       h = rrand(0, HUMANIZE_TIME)
       #sleep @RHYTHM_TIME[0]* 1.0 / t.length + @RHYTHM_SWING.tick - h
@@ -333,21 +341,14 @@ define :playDirigent do
 end
 
 define :playLive do
-  if @PLAY_DUNDUN
-    playLiveTrack("dundunTrack", @RHYTHM, "dundun")
+  soloTracks = TRACKS.select{|t| TRACKS[t]["solo"] == 1}
+  tracksToPlay = soloTracks.size > 0 ? soloTracks : TRACKS
+  tracksToPlay.each do |track, trackProperties|
+    if trackProperties["mute"] == 0
+      playLiveTrack(track, @RHYTHM, trackProperties["instrumentName"])
+    end
   end
-  if @PLAY_SANGBAN
-    playLiveTrack("sangbanTrack", @RHYTHM, "sangban")
-  end
-  if @PLAY_KENKEN
-    playLiveTrack("kenkenTrack", @RHYTHM, "kenken")
-  end
-  if @PLAY_DJEMBE
-    playLiveTrack("djembeTrack", @RHYTHM, "djembe")
-  end
-  #if @PLAY_DJEMBE
-    #playLiveTrack("djembe2Track", @RHYTHM, "djembe2")
-  #end
+
   playDirigent
 end
 

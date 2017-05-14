@@ -3,7 +3,8 @@ TODO
     - v zátvorkách () bude skupina úderov, ktoré sa majú odohrať za jednu štvrťovú notu
     (tj ak tam budú tri noty, zahrajú sa tri údery, ak 5 nôt, zahrá sa 5 úderov... veľká variabilita...)
 - notácia patternov
-    zamysleť sa aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
+    - zamysleť sa aké písmenká pre aké noty používať (napr. bude "b" zvonček, keď "B" je náhodný úder???)
+    - využiť možnosti UNICODE, príklady nôt: XxẊẋẌẍ ȮȯỌọӦӧ
     - zaviesť modifikátory nôt, bude na to potrebný inteligentnejší parser patternov:
         - medzery budú povolené, ale prehrávačom patternu ignorované (budú iba pre používateľa)
         - pred každou notou môže byť modifikátor, príklady modifikátorov:
