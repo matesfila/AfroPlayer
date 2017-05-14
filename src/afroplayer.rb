@@ -255,44 +255,54 @@ orders = {}
 varcycle_len = @VARCYCLE_LEN.choose
 
 define :playLiveTrack do |trackName, rhythm, instrumentName|
+
+  #Vráti index variácie, ktorá sa má hrať a aktualizuje frontu variationsToPlay ak treba.
+  define :selectVariation do |variations, variationsToPlay, lastVariation|
+    variation = nil
+    if (variations.size > 0)
+      #ak je zoznam variácie na hranie už prázdny, tak sa naplní
+      if variationsToPlay.empty?
+        varToPlay = nil #variácia, ktorá sa bude pridávať do variationsToPlay (index)
+        if @VAR_RANDOMSELECT
+          if (variations.size == 1)
+            variation = nil #v nasl sa teda nebude hrat variacia
+            varToPlay = 0
+          elsif (variations.size > 1)
+            varToPlay = dice(variations.size) - 1
+            while varToPlay == lastVariation do
+              varToPlay = dice(variations.size) - 1
+            end
+          end
+        else
+          varToPlay = ((lastVariation || -1) + 1) % variations.size
+        end
+        rrand_i(@VAR_MINREPEAT, @VAR_MAXREPEAT).times do
+          variationsToPlay << varToPlay
+        end
+      end
+      variation = variationsToPlay.pop
+      lastVariation = variation
+    end
+    return variation
+  end
+
   basePatterns = rhythm["patterns"][instrumentName]["base"]
   variations = rhythm["patterns"][instrumentName]["variations"]
 
-  #variationsToPlay = zoznam variácií, ktoré sa budú hrať
+  #variationsToPlay = fronta variácií, ktoré sa budú hrať
   variationsToPlay = Queue.new
   #lastVariation = variácia, ktorá sa hrala naposledy
   lastVariation = nil
+
   in_thread(name: trackName) do
     loop do
-      variation = nil
+
       #výber variácie
-      if (variations.size > 0)
-        #ak je zoznam variácie na hranie už prázdny, tak sa naplní
-        if variationsToPlay.empty?
-          varToPlay = nil #variácia, ktorá sa bude pridávať do variationsToPlay (index)
-          if @VAR_RANDOMSELECT
-            if (variations.size == 1)
-              variation = nil #v nasl sa teda nebude hrat variacia
-              varToPlay = 0
-            elsif (variations.size > 1)
-              varToPlay = dice(variations.size) - 1
-              while varToPlay == lastVariation do
-                varToPlay = dice(variations.size) - 1
-              end
-            end
-          else
-            varToPlay = ((lastVariation || -1) + 1) % variations.size
-          end
-          rrand_i(@VAR_MINREPEAT, @VAR_MAXREPEAT).times do
-            variationsToPlay << varToPlay
-          end
-        end
-        variation = variationsToPlay.pop
-        lastVariation = variation
-        if (variation != nil)
-          #premenná variation sa preklopí z indexu na samotnú variáciu:
-          variation = variations[variation]
-        end
+      variation = selectVariation(variations, variationsToPlay, lastVariation)
+      lastVariation = variation
+      if (variation != nil)
+        #ak sa našla variácia, preklopí sa z indexu na samotnú variáciu:
+        variation = variations[variation]
       end
 
       #existuje závislosť na zvolenej variácii? Vytvor príkaz
