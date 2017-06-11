@@ -2,7 +2,7 @@
 #### Gbereduka ####
 ###################
 
-@BPM = 110
+@BPM = 120
 @RHYTHM_TIME = [12,8] #dvanásť osminový rytmus
 @RHYTHM_SWING = (ring -0.04,+0.04, 0)
 
@@ -17,16 +17,15 @@ san_base =  "XX.b.I.bI.b.|b.I.bI.bb.X.|" +
 
 ken_base = ".bX.XX.bX.XX"
 
-dj_base =  ["x.ox..x.ox.."].cycle(8).to_a.join('|')
-dj_base2 = ["x..xoox..xoo"].cycle(8).to_a.join('|')
-dj_base3 = ["............"].cycle(8).to_a.join('|')
+dj_base =  ["x.ox..x.ox.."].cycle(4).to_a.join('|') + "|" + ["oqoqoqxyxyxyxyxyxyxyxyxy"].cycle(4).to_a.join('|')
+dj_base2 = ["x..xoox..xoo"].cycle(4).to_a.join('|') + "|" + ["oyxyxyoyxyxyoyxyxyoyxyxy"].cycle(4).to_a.join('|')
+#dj_base3 = ["............"].cycle(8).to_a.join('|')
 
 @RHYTHM = {
   "patterns" => {
     "dundun" => {
       "base" => [dun_base],
-      "variations" => [] +
-      []
+      "variations" => [] + []
     },
     "sangban" => {
       "base" => [san_base],
@@ -37,11 +36,11 @@ dj_base3 = ["............"].cycle(8).to_a.join('|')
       "variations" => []
     },
     "djembe" => {
-      "base" => [dj_base, dj_base, dj_base2, dj_base3, dj_base3],
+      "base" => [dj_base2, dj_base2],
       "variations" => []
     }
   },
   "dependencies" => {
-    #"sangban" => {san_var1 => {"dundun" => dun_var1}}
+  #"sangban" => {san_var1 => {"dundun" => dun_var1}}
   }
 }

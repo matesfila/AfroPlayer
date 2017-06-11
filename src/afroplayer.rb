@@ -9,7 +9,7 @@ HUMANIZE_DYNAMIC = 0.2
 HUMANIZE_PITCH = 0.005
 
 #dĺžka základného cyklu: na konci každého základného cyklu sa zahrá variácia
-@VARCYCLE_LEN = [4]
+@VARCYCLE_LEN = [8]
 #či sa variácie vyberajú náhodne, alebo v poradí, v akom sú definované
 @VAR_RANDOMSELECT = false
 #minimálne koľkokrát sa zvolená variácia zopakuje
@@ -117,7 +117,7 @@ INSTRUMENTS = {
 @RHYTHM_SWING ||= (ring 0,0,0,0)
 
 #regulárny výraz na hodnotu patternu, príklad: "kenken: x.b.x.b.|x.b.x.b."
-RGXP_PATTERN = /^(\w+):\s+([\.\|bXABCDIixyop]+)$/
+RGXP_PATTERN = /^(\w+):\s+([\.\|bXABCDEFIixyzopq]+)$/
 
 define :countNoteDelay do |note|
   #definuje dĺžku sleepu: pre štvrťové rytmy sa hrajú šestnástinové noty, pre trojkové sa hrajú osminové
@@ -199,13 +199,21 @@ define :playNote do |note: "", instrument: {}, instrumentName: ""|
     case
     when note == 'D'
       playSample(instrument: bass, probability: 1)
+    when note == 'E'
+      playSample(instrument: bass, probability: 0.6)
+    when note == 'F'
+      playSample(instrument: bass, probability: 0.12)
     when note == 'x'
       playSample(instrument: slap, probability: 1)
     when note == 'y'
+      playSample(instrument: slap, probability: 0.6)
+    when note == 'z'
       playSample(instrument: slap, probability: 0.12)
     when note == 'o'
       playSample(instrument: ton, probability: 1)
     when note == 'p'
+      playSample(instrument: ton, probability: 0.6)
+    when note == 'q'
       playSample(instrument: ton, probability: 0.12)
     when note == 'i'
       playSample(instrument: closed, probability: 1)
@@ -362,11 +370,10 @@ end
 
 define :playLive do
   soloTracks = TRACKS.select{|t| TRACKS[t]["solo"] == 1}
-  tracksToPlay = soloTracks.size > 0 ? soloTracks : TRACKS
+  tracksToPlay = (soloTracks.size > 0 ? soloTracks : TRACKS).select{|t| TRACKS[t]["mute"] == 0}
+
   tracksToPlay.each do |track, trackProperties|
-    if trackProperties["mute"] == 0
-      playLiveTrack(track, @RHYTHM, trackProperties["instrumentName"])
-    end
+    playLiveTrack(track, @RHYTHM, trackProperties["instrumentName"])
   end
 
   playDirigent
