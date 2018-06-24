@@ -363,7 +363,7 @@ define :playDirigent do
       use_bpm @BPM
       #sample  :drum_cymbal_closed #metronom
       cue :tick
-      sleep DELAY * @RHYTHM_TIME[0]
+      sleep DELAY * @RHYTHM_TIME[0] + HUMANIZE_TIME
     end
   end
 end
