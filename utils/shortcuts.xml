@@ -1,0 +1,16 @@
+<NotepadPlus>
+    <InternalCommands />
+    <Macros>
+        <Macro name="Trim Trailing and save" Ctrl="no" Alt="yes" Shift="yes" Key="83">
+            <Action type="2" message="0" wParam="42024" lParam="0" sParam="" />
+            <Action type="2" message="0" wParam="41006" lParam="0" sParam="" />
+        </Macro>
+    </Macros>
+    <UserDefinedCommands>
+        <Command name="afroplayer-play-jam" Ctrl="no" Alt="yes" Shift="no" Key="82">C:\Users\matus\Desktop\AfroPlayer\utils\afp-jam.bat $(CURRENT_DIRECTORY) $(FILE_NAME)</Command>
+        <Command name="afroplayer-play-song" Ctrl="no" Alt="yes" Shift="no" Key="84">C:\Users\matus\Desktop\AfroPlayer\utils\afp-song.bat $(CURRENT_DIRECTORY) $(FILE_NAME)</Command>
+        <Command name="afroplayer-stop" Ctrl="no" Alt="yes" Shift="yes" Key="82">C:\Users\matus\Desktop\AfroPlayer\utils\_stop.bat</Command>
+    </UserDefinedCommands>
+    <PluginCommands />
+    <ScintillaKeys />
+</NotepadPlus>
