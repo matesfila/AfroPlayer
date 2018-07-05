@@ -18,7 +18,7 @@
     },
     "sangban" => {
       "base" => ["X.b.b.X.|X.b.b.X."],
-      "variations" => []
+      "variations" => ["X.bX.bX.|bX.bX.X."]
     },
     "kenken" => {
       #"base" => ["X.b.X.b.|X.b.X.b."],

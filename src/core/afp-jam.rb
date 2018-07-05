@@ -3,6 +3,21 @@
 ##################################################################
 
 
+#dĺžka základného cyklu: na konci každého základného cyklu sa zahrá variácia
+@VARCYCLE_LEN = [4]
+#či sa variácie vyberajú náhodne, alebo v poradí, v akom sú definované
+@VAR_RANDOMSELECT = false
+#minimálne koľkokrát sa zvolená variácia zopakuje
+@VAR_MINREPEAT = 1
+#maximálne koľkokrát sa zvolená variácia zopakuje
+@VAR_MAXREPEAT = 2
+
+#@BREAK_CYCLELEN = [16]
+#@RANDOM_BREAKS = false
+#@BREAK_MINREPEAT = 1
+#@BREAK_MAXREPEAT = 1
+
+#@VARCYCLE_LEN ||= [4]
 
 # Globálna premenná orders. Ukladajú sa do nej komunikačné príkazy medzi
 # jednotlivými threadmi reprezentujúcimi konkrétny hudobný nástroj.
@@ -107,6 +122,12 @@ define :playLiveTrack do |trackName, rhythm, instrumentName|
   end
 end
 
+#getTracksToPlay vrati zoznam trackov so zohladnenim parametrov solo a mute
+define :getTracksToPlay do |tracks|
+	soloTracks = tracks.select{|t| tracks[t]["solo"] == 1}
+	tracksToPlay = (soloTracks.size > 0 ? soloTracks : tracks).select{|t| tracks[t]["mute"] == 0}
+end
+
 define :playDirigent do
 #  cue :tick
   in_thread(name: :dirigent) do
@@ -115,22 +136,18 @@ define :playDirigent do
       use_bpm @BPM
       #sample  :drum_cymbal_closed #metronom
       cue :tick
-      sleep DELAY * @RHYTHM_TIME[0] + HUMANIZE_TIME
+      sleep DELAY * @RHYTHM_TIME[0] + HUMANIZE_TIME + 0.025
     end
   end
 end
 
 define :playLive do
-  soloTracks = TRACKS.select{|t| TRACKS[t]["solo"] == 1}
-  tracksToPlay = (soloTracks.size > 0 ? soloTracks : TRACKS).select{|t| TRACKS[t]["mute"] == 0}
-
-  tracksToPlay.each do |track, trackProperties|
-    playLiveTrack(track, @RHYTHM, trackProperties["instrumentName"])
-  end
-
-  playDirigent
+	getTracksToPlay(TRACKS).each do |track, trackProperties|
+		playLiveTrack(track, @RHYTHM, trackProperties["instrumentName"])
+	end
+	playDirigent
 end
 
 with_fx :reverb, room:0.2, damp:0.5 do
-  playLive()
+	playLive()
 end

@@ -9,20 +9,6 @@ HUMANIZE_TIME = 0.0133
 HUMANIZE_DYNAMIC = 0.2
 HUMANIZE_PITCH = 0.005
 
-#dĺžka základného cyklu: na konci každého základného cyklu sa zahrá variácia
-@VARCYCLE_LEN = [4]
-#či sa variácie vyberajú náhodne, alebo v poradí, v akom sú definované
-@VAR_RANDOMSELECT = false
-#minimálne koľkokrát sa zvolená variácia zopakuje
-@VAR_MINREPEAT = 1
-#maximálne koľkokrát sa zvolená variácia zopakuje
-@VAR_MAXREPEAT = 2
-
-#@BREAK_CYCLELEN = [16]
-#@RANDOM_BREAKS = false
-#@BREAK_MINREPEAT = 1
-#@BREAK_MAXREPEAT = 1
-
 TRACKS = {
   #pre solo a mute: 0 = false, 1 = true, skrateny zapis
   "dundunTrack" => {"instrumentName" => "dundun", "solo" => 0, "mute" => 0},
@@ -57,12 +43,12 @@ define :multiSample do |sampleName, count|
 end
 
 SAMPLES = {
-  "dundun" => {"sample" => multiSample("dundun_s2_v", 5), "amp" => 2.5, "rate" => 0.74, "pan" => -0.3},
-  "dunclos" => {"sample" => multiSample("dundun_closed_v", 6), "amp" => 3, "rate" => 0.9, "pan" => 0.1},
-  "sangban" => {"sample" => multiSample("sangban_s2_v", 7), "amp" => 2, "rate" => 0.9, "pan" => 0.1},
+  "dundun" => {"sample" => multiSample("dundun_s2_v", 5), "amp" => 2.2, "rate" => 0.74, "pan" => -0.3},
+  "dunclos" => {"sample" => multiSample("dundun_closed_v", 6), "amp" => 3, "rate" => 0.9, "pan" => -0.3},
+  "sangban" => {"sample" => multiSample("sangban_s2_v", 6), "amp" => 2.5, "rate" => 0.9, "pan" => 0.1},
   "sanclos" => {"sample" => multiSample("sangban_closed_v", 6), "amp" => 3, "rate" => 0.9, "pan" => 0.1},
   "kenken" => {"sample" => multiSample("kenkeni_s2_v", 7), "amp" => 2, "rate" => 1.1, "pan" => 0.02},
-  "kenclos" => {"sample" => multiSample("kenkeni_closed_v", 6), "amp" => 3, "rate" => 0.9, "pan" => 0.1},
+  "kenclos" => {"sample" => multiSample("kenkeni_closed_v", 6), "amp" => 3, "rate" => 0.9, "pan" => 0.02},
   "dunbell" => {"sample" => multiSample("dundun_bell_open_v", 4), "amp" => 0.8, "rate" => 0.8, "pan" => -0.3},
   "sanbell" => {"sample" => multiSample("sangban_bell_open_v", 5), "amp" => 1, "rate" => 1, "pan" => 0.1},
   "kenbell" => {"sample" => multiSample("kenkeni_bell_open_v", 3), "amp" => 1.3, "rate" => 1.2, "pan" => 0.02},
@@ -113,7 +99,6 @@ INSTRUMENTS = {
 
 # Nastavenie defaultných hodnôt pre globálne premenné
 @BPM ||= 95
-@VARCYCLE_LEN ||= [4]
 @RHYTHM_TIME ||= [4,4]
 @RHYTHM_SWING ||= (ring 0,0,0,0)
 
@@ -145,20 +130,20 @@ define :rand_around do |v,r|
 end
 
 define :playSample do |instrument: {}, probability: 1|
-  use_bpm @BPM
-
-  if rand <= probability
-    sample instrument["sample"].choose,
-      amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
-      pan: instrument["pan"],
-      rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
-      attack: instrument["attack"],
-      sustain: instrument["sustain"],
-      release: instrument["release"]
-    return true
-  else
-    return false
-  end
+	use_bpm @BPM
+	
+	if rand <= probability
+		sample instrument["sample"].choose,
+			amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
+			pan: instrument["pan"],
+			rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
+			attack: instrument["attack"],
+			sustain: instrument["sustain"],
+			release: instrument["release"]
+		return true
+	else
+		return false
+	end
 end
 
 define :playNote do |note: "", instrument: {}, instrumentName: ""|
@@ -233,22 +218,52 @@ end
 # end
 
 define :patternSize do |pattern|
-  return pattern.delete("|").length()
+	return pattern.delete("|").length()
+end
+
+define :barCount do |pattern|
+	count = 1
+	pattern.each_char { |c|
+		if c == "|"
+			count = count + 1
+		end
+	}
+	return count
+end
+
+define :playBar do |bar: "", instrumentName: ""|
+	use_bpm @BPM
+	h = 0
+	sync :tick
+	bar.each_char { |c|
+		playNote(note: c, instrument: INSTRUMENTS[instrumentName], instrumentName: instrumentName)
+		sleep h
+		h = rrand(0, HUMANIZE_TIME)
+		#sleep @RHYTHM_TIME[0]* 1.0 / bar.length + @RHYTHM_SWING.tick - h
+		sleep DELAY * (1.0*@RHYTHM_TIME[0] / bar.length) + @RHYTHM_SWING.tick - h
+		#sleep DELAY + @RHYTHM_SWING.tick - h
+	}
 end
 
 define :playPattern do |pattern: "", instrumentName: ""|
-  use_bpm @BPM
-  h = 0
-  #pattern = patternParse(pattern)
-  pattern.split(/\|/).each do |t|
-    sync :tick
-    t.each_char { |c|
-  	  playNote(note: c, instrument: INSTRUMENTS[instrumentName], instrumentName: instrumentName)
-      sleep h
-      h = rrand(0, HUMANIZE_TIME)
-      #sleep @RHYTHM_TIME[0]* 1.0 / t.length + @RHYTHM_SWING.tick - h
-      sleep DELAY * (1.0*@RHYTHM_TIME[0] / t.length) + @RHYTHM_SWING.tick - h
-      #sleep DELAY + @RHYTHM_SWING.tick - h
-    }
-  end
+	#pattern = patternParse(pattern)
+	pattern.split(/\|/).each do |b|
+		playBar(bar: b, instrumentName: instrumentName)
+	end
 end
+
+# prehrá všetky patterny zadané v mape patterns
+# patterns je mapa prvkov instrumentName -> pattern
+#define :playPatterns do |patterns: {}|
+#	patterns.each do |instrumentName, pattern|
+#		puts instrumentName + " => " + pattern
+#		in_thread() do
+#			playPattern(pattern: pattern, instrumentName: instrumentName)
+#			cue :p
+#		end
+#	end
+#	patterns.each do |instrumentName, pattern|
+#		sync :p
+#		#sync :tick
+#	end
+#end
