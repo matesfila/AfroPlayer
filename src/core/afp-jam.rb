@@ -122,11 +122,6 @@ define :playLiveTrack do |trackName, rhythm, instrumentName|
   end
 end
 
-#getTracksToPlay vrati zoznam trackov so zohladnenim parametrov solo a mute
-define :getTracksToPlay do |tracks|
-	soloTracks = tracks.select{|t| tracks[t]["solo"] == 1}
-	tracksToPlay = (soloTracks.size > 0 ? soloTracks : tracks).select{|t| tracks[t]["mute"] == 0}
-end
 
 define :playDirigent do
 #  cue :tick
