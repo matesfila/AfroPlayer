@@ -2,11 +2,10 @@
 #### MAANE ####
 ###############
 
-@BPM = 115
-@RHYTHM_TIME = [12,8] #dvanast osminový rytmus
-@RHYTHM_SWING = (ring 0,0,0)
-
-@RHYTHM = {
+@MAANE = {
+	"BPM" => 115,
+	"TIME_SIGNATURE" => [12,8],
+	"SWING" => (ring 0,0,0),
 	"patterns" => {
 		"dundun" => {
 			"base" => ["X.b.b.b.b.b.|b.b.b.XXX.X."],
@@ -30,10 +29,12 @@
 		},
 		"balafon" => {
 			#"base" => ["c1 .. g0 .. g0 .. c1 .. a0 .. a0 ..",".. e1 .. c1 .. c1 .. e1 .. d1 .. d1"]
-			"base" => ["c1 e1 g0 c1 g0 c1 c1 e1 a0 d1 a0 d1"]
+			"base" => ["c1 e1 g0 c1 g0 c1 c1 e1 a0 d1 a0 d1"],
+			"variations" => []
 		}
 	},
 		"dependencies" => {
 	}
 }
 
+@RHYTHM = @MAANE

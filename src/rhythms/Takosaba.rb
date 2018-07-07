@@ -2,10 +2,6 @@
 #### Takosaba ####
 ##################
 
-@BPM = 120
-@RHYTHM_TIME = [12,8] #dvanásť osminový rytmus
-@RHYTHM_SWING = (ring -0.03,+0.04, -0.01)
-
 dun_base =  ".XX.bb.bb.XX|.XX.bb.XX.XX|" +
             ".XX.bb.bb.XX|.X.X.X.XX.XX|" +
             ".X.X.X.XX.XX"
@@ -37,26 +33,31 @@ dj_base =  ["x.ox..x.ox.."].cycle(5).to_a.join('|')
 dj_base2 = ["x..xoox..xoo"].cycle(5).to_a.join('|')
 dj_base3 = ["............"].cycle(5).to_a.join('|')
 
-@RHYTHM = {
-  "patterns" => {
-    "dundun" => {
-      "base" => [dun_base],
-      "variations" => [dun_var1, dun_var2, dun_var3, dun_var4]
-    },
-    "sangban" => {
-      "base" => [san_base],
-      "variations" => []
-    },
-    "kenken" => {
-      "base" => [ken_base],
-      "variations" => []
-    },
-    "djembe" => {
-      "base" => [dj_base, dj_base, dj_base2, dj_base3, dj_base3],
-      "variations" => []
-    }
-  },
-  "dependencies" => {
-    #"sangban" => {san_var1 => {"dundun" => dun_var1}}
-  }
+@TAKOSABA = {
+	"BPM" => 120,
+	"TIME_SIGNATURE" => [12,8],
+	"SWING" => (ring -0.03,+0.04, -0.01),
+	"patterns" => {
+		"dundun" => {
+			"base" => [dun_base],
+			"variations" => [dun_var1, dun_var2, dun_var3, dun_var4]
+		},
+		"sangban" => {
+			"base" => [san_base],
+			"variations" => []
+		},
+		"kenken" => {
+			"base" => [ken_base],
+			"variations" => []
+		},
+		"djembe" => {
+			"base" => [dj_base, dj_base, dj_base2, dj_base3, dj_base3],
+			"variations" => []
+		}
+	},
+	"dependencies" => {
+		#"sangban" => {san_var1 => {"dundun" => dun_var1}}
+	}
 }
+
+ @RHYTHM = @TAKOSABA

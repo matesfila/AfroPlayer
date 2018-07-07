@@ -2,10 +2,6 @@
 #### Gbereduka ####
 ###################
 
-@BPM = 120
-@RHYTHM_TIME = [12,8] #dvanásť osminový rytmus
-@RHYTHM_SWING = (ring -0.04,+0.04, 0)
-
 dun_base =  "X.XX.b.bb.b.|b.bb.b.XX.X.|" +
             "X.XX.b.bb.b.|b.bb.b.XX.X.|" +
             "X.XX.X.XX.X.|XX.X.X.XX.X.|" +
@@ -21,26 +17,31 @@ dj_base =  ["x.ox..x.ox.."].cycle(4).to_a.join('|') + "|" + ["oqoqoqxyxyxyxyxyxy
 dj_base2 = ["x..xoox..xoo"].cycle(4).to_a.join('|') + "|" + ["oyxyxyoyxyxyoyxyxyoyxyxy"].cycle(4).to_a.join('|')
 #dj_base3 = ["............"].cycle(8).to_a.join('|')
 
-@RHYTHM = {
-  "patterns" => {
-    "dundun" => {
-      "base" => [dun_base],
-      "variations" => [] + []
-    },
-    "sangban" => {
-      "base" => [san_base],
-      "variations" => []
-    },
-    "kenken" => {
-      "base" => [ken_base],
-      "variations" => []
-    },
-    "djembe" => {
-      "base" => [dj_base2, dj_base2],
-      "variations" => []
-    }
-  },
-  "dependencies" => {
-  #"sangban" => {san_var1 => {"dundun" => dun_var1}}
-  }
+@GBEREDUKA = {
+	"BPM" => 120,
+	"TIME_SIGNATURE" => [12,8],
+	"SWING" => (ring -0.04,+0.04, 0),
+	"patterns" => {
+		  "dundun" => {
+			"base" => [dun_base],
+			"variations" => [] + []
+		  },
+		  "sangban" => {
+			"base" => [san_base],
+			"variations" => []
+		  },
+		  "kenken" => {
+			"base" => [ken_base],
+			"variations" => []
+		  },
+		  "djembe" => {
+			"base" => [dj_base2, dj_base2],
+			"variations" => []
+		  }
+	},
+	"dependencies" => {
+		#"sangban" => {san_var1 => {"dundun" => dun_var1}}
+	}
 }
+
+ @RHYTHM = @GBEREDUKA

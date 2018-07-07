@@ -28,7 +28,10 @@ dun_var3 = "XXX.....|.XXX...."
 san_var3 = "...XXX..|....XXX."
 ken_var3 = "......XX|X......X"
 
-@RHYTHM = {
+TESTRHYTHM = {
+	"BPM" => ,
+	"TIME_SIGNATURE" => [,],
+	"SWING" => (ring 0,0,0),
   "patterns" => {
     "dundun" => {
       "base" => [dun_base],
@@ -59,3 +62,5 @@ ken_var3 = "......XX|X......X"
     }
   }
 }
+
+ @RHYTHM = TESTRHYTHM

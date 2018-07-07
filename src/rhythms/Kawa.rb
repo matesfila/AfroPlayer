@@ -2,25 +2,21 @@
 ### Kawa ####
 #############
 
-@BPM = 123
-@RHYTHM_TIME = [12,8] #dvanásť osminový rytmus
-@RHYTHM_SWING =  (ring 0,0,0) #(ring -0.02, 0.06, -0.04)
-
-dun_var1 = ".bX.XX.X.X.b|.XX.XX.bb.bb"
-san_var1 = "I.b.X.b.XX.b|X.X.X.b.XX.b"
-
-@RHYTHM = {
+@KAWA = {
+	"BPM" => 123,
+	"TIME_SIGNATURE" => [12,8],
+	"SWING" => (ring 0,0,0), #(ring -0.02, 0.06, -0.04)
 	"patterns" => {
 		"dundun" => {
 			"base" => [".bb.XX.X.X.X|.XX.XX.bb.bb"],
-			"variations" => [dun_var1],
+			"variations" => [".bX.XX.X.X.b|.XX.XX.bb.bb"],
 			"echauff" => [".XX.XX.X.X.X|.XX.XX.X.X.X"],
 			"echauff-in" => [".XX.XX.X.X.X|.XX.XX.X.X.X"],
 			"echauff-out" => [".XX.XX.X.X.X|.XX.XX.bb.bb"]
 		},
 		"sangban" => {
 			"base" => ["I.b.X.b.XX.b|X.X.X.b.XX.b"],
-			"variations" => [san_var1],
+			"variations" => ["I.b.X.b.XX.b|X.X.X.b.XX.b"],
 			"echauff" => ["I.b.X.b.XX.b|.XX.X.b.XX.b"],
 			"echauff-in" => ["I.b.X.b.XX.b|.XX.X.b.XX.b"],
 			"echauff-out" => ["I.b.bX.X.X.b|.XX.X.b.XX.b"]
@@ -34,10 +30,12 @@ san_var1 = "I.b.X.b.XX.b|X.X.X.b.XX.b"
 			"variations" => [],
 			"echauff" => ["oooxxxxxxxxx"],
 			"echauff-in" => ["oooxxxxxxxxx"],
-			"echauff-out" => ["oooxxxxxxxxx|ooooo.oo.o.."]
+			"echauff-out" => ["o...........|ooooo.oo.o.."]
 		}
 	},
 	"dependencies" => {
-		"sangban" => {san_var1 => {"dundun" => dun_var1}}
+		"sangban" => {"I.b.X.b.XX.b|X.X.X.b.XX.b" => {"dundun" => ".bX.XX.X.X.b|.XX.XX.bb.bb"}}
 	}
 }
+
+@RHYTHM = @KAWA

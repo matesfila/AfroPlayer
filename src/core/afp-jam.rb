@@ -122,6 +122,12 @@ define :playLiveTrack do |trackName, rhythm, instrumentName|
   end
 end
 
+define :playLive do
+	getTracksToPlay(TRACKS).each do |track, trackProperties|
+		playLiveTrack(track, @RHYTHM, trackProperties["instrumentName"])
+	end
+	playDirigent
+end
 
 define :playDirigent do
 #  cue :tick
@@ -131,18 +137,12 @@ define :playDirigent do
       use_bpm @BPM
       #sample  :drum_cymbal_closed #metronom
       cue :tick
-      sleep DELAY * @RHYTHM_TIME[0] + HUMANIZE_TIME + 0.025
+      sleep @DELAY * @RHYTHM_TIME[0] + HUMANIZE_TIME + 0.025
     end
   end
 end
 
-define :playLive do
-	getTracksToPlay(TRACKS).each do |track, trackProperties|
-		playLiveTrack(track, @RHYTHM, trackProperties["instrumentName"])
-	end
-	playDirigent
-end
-
+initRhythm(@RHYTHM)
 with_fx :reverb, room:0.2, damp:0.5 do
 	playLive()
 end

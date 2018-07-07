@@ -6,8 +6,8 @@
 ##################################################################
 
 HUMANIZE_TIME = 0.0133
-HUMANIZE_DYNAMIC = 0.2
-HUMANIZE_PITCH = 0.005
+HUMANIZE_DYNAMIC = 0.4
+HUMANIZE_PITCH = 0.010
 
 TRACKS = {
   #pre solo a mute: 0 = false, 1 = true, skrateny zapis
@@ -16,7 +16,7 @@ TRACKS = {
   "kenkenTrack" => {"instrumentName" => "kenken", "solo" => 0, "mute" => 0},
   "djembeTrack" => {"instrumentName" => "djembe", "solo" => 0, "mute" => 0},
   "djembe2Track" => {"instrumentName" => "djembe2", "solo" => 0, "mute" => 1},
-  "balafonTrack" => {"instrumentName" => "balafon", "solo" => 1, "mute" => 0}
+  "balafonTrack" => {"instrumentName" => "balafon", "solo" => 0, "mute" => 1}
 }
 
 # SAMPLES = {
@@ -140,8 +140,6 @@ define :countNoteDelay do |note|
 	end
 end
 
-DELAY = countNoteDelay(@RHYTHM_TIME[0])
-
 define :rand_around do |v,r|
 	return rrand(v-r, v+r)
 end
@@ -165,7 +163,6 @@ end
 
 define :playNote do |note: "", instrument: {}, instrumentName: ""|
 
-	puts "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  " + instrumentName + note
 	case
 		when ["dundun", "sangban", "kenken"].include?(instrumentName)
 			drumOpen = instrument["open"]
@@ -267,8 +264,8 @@ define :playBar do |bar: "", instrumentName: ""|
 			sleep h
 			h = rrand(0, HUMANIZE_TIME)
 			#sleep @RHYTHM_TIME[0]* 1.0 / bar.length + @RHYTHM_SWING.tick - h
-			sleep DELAY * (1.0*@RHYTHM_TIME[0] / bar.split.length) + @RHYTHM_SWING.tick - h
-			#sleep DELAY + @RHYTHM_SWING.tick - h
+			sleep @DELAY * (1.0*@RHYTHM_TIME[0] / bar.split.length) + @RHYTHM_SWING.tick - h
+			#sleep @DELAY + @RHYTHM_SWING.tick - h
 		}
 	else
 		bar.each_char { |c|
@@ -276,8 +273,8 @@ define :playBar do |bar: "", instrumentName: ""|
 			sleep h
 			h = rrand(0, HUMANIZE_TIME)
 			#sleep @RHYTHM_TIME[0]* 1.0 / bar.length + @RHYTHM_SWING.tick - h
-			sleep DELAY * (1.0*@RHYTHM_TIME[0] / bar.length) + @RHYTHM_SWING.tick - h
-			#sleep DELAY + @RHYTHM_SWING.tick - h
+			sleep @DELAY * (1.0*@RHYTHM_TIME[0] / bar.length) + @RHYTHM_SWING.tick - h
+			#sleep @DELAY + @RHYTHM_SWING.tick - h
 		}
 	end
 end
@@ -295,6 +292,13 @@ define :getTracksToPlay do |tracks|
 	tracksToPlay = (soloTracks.size > 0 ? soloTracks : tracks).select{|t| tracks[t]["mute"] == 0}
 end
 
+define :initRhythm do |rhythm|
+	@RHYTHM = rhythm
+	@BPM = rhythm["BPM"]
+	@RHYTHM_TIME = rhythm["TIME_SIGNATURE"]
+	@RHYTHM_SWING = rhythm["SWING"]
+	@DELAY = countNoteDelay(@RHYTHM_TIME[0])
+end
 
 # prehrá všetky patterny zadané v mape patterns
 # patterns je mapa prvkov instrumentName -> pattern
