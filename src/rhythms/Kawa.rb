@@ -3,7 +3,7 @@
 #############
 
 @KAWA = {
-	"BPM" => 123,
+	"BPM" => 129,
 	"TIME_SIGNATURE" => [12,8],
 	"SWING" => (ring 0,0,0), #(ring -0.02, 0.06, -0.04)
 	"patterns" => {

@@ -7,7 +7,7 @@
 
 HUMANIZE_TIME = 0.0133
 HUMANIZE_DYNAMIC = 0.4
-HUMANIZE_PITCH = 0.010
+HUMANIZE_PITCH = 0.005
 
 TRACKS = {
   #pre solo a mute: 0 = false, 1 = true, skrateny zapis
@@ -52,6 +52,7 @@ SAMPLES = {
   "kenclos" => {"sample" => multiSample("kenkeni_closed_v", 6), "amp" => 3, "rate" => 0.9, "pan" => 0.02},
   "dunbell" => {"sample" => multiSample("dundun_bell_open_v", 4), "amp" => 0.8, "rate" => 0.8, "pan" => -0.3},
   "sanbell" => {"sample" => multiSample("sangban_bell_open_v", 5), "amp" => 1, "rate" => 1, "pan" => 0.1},
+  #"sanbell" => {"sample" => [nil], "amp" => 0, "rate" => 0, "pan" => 0},
   "kenbell" => {"sample" => multiSample("kenkeni_bell_open_v", 3), "amp" => 1.3, "rate" => 1.2, "pan" => 0.02},
   "djbass" => {"sample" => [:dj_tm_bass], "amp" => 1, "rate" => 1, "pan" => 0},
   "djton" => {"sample" => multiSample("dj_tm_ton_v", 6), "amp" => 2, "rate" => 1, "pan" => 0},
@@ -137,6 +138,8 @@ define :countNoteDelay do |note|
 			return 1.0 / 4
 		when note == 12
 			return 1.0 / 3
+		when note == 16
+			return 1.0 / 4
 	end
 end
 
@@ -147,8 +150,9 @@ end
 define :playSample do |instrument: {}, probability: 1|
 	use_bpm @BPM
 	
-	if rand <= probability
-		sample instrument["sample"].choose,
+	s = instrument["sample"].choose
+	if s != nil && rand <= probability
+		sample s,
 			amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
 			pan: instrument["pan"],
 			rate: rand_around(instrument["rate"], HUMANIZE_PITCH),

@@ -2,6 +2,8 @@
 # Engine skladanie konkretneho songu.
 ##################################################################
 
+@CREATE_SONG = nil
+
 define :addPattern do |patternType: "", song: {}|
 
 	define :choosePattern do |instrument: "", patternType: ""|
@@ -87,101 +89,38 @@ define :playSong do |song|
 		playSongTrack(trackName, song[trackName])
 	end
 	
-	playDirigent
+	playSongDirigent
 end
 
-song = {}
+@song = {}
 
 define :basePattern do |count: 1|
-	count.times do addPattern(patternType: "base", song: song) end
+	count.times do addPattern(patternType: "base", song: @song) end
 end
 
 define :variation do
-	addPattern(patternType: "variations", song: song)
+	addPattern(patternType: "variations", song: @song)
 end
 
 define :echauffement do |count: 1|
-	addPattern(patternType: "echauff-in", song: song)
-	count.times do addPattern(patternType: "echauff", song: song) end
-	addPattern(patternType: "echauff-out", song: song)
+	addPattern(patternType: "echauff-in", song: @song)
+	count.times do addPattern(patternType: "echauff", song: @song) end
+	addPattern(patternType: "echauff-out", song: @song)
 end
 
 define :echauffement_direct do |count: 1|
-	count.times do addPattern(patternType: "echauff", song: song) end
-	addPattern(patternType: "echauff-out", song: song)
+	count.times do addPattern(patternType: "echauff", song: @song) end
+	addPattern(patternType: "echauff-out", song: @song)
 end
 
 define :initSong do
-	song = {}
+	@song = {}
 	TRACKS.each do |trackName, trackProperties|
-		song[trackName] = Queue.new
+		@song[trackName] = Queue.new
 	end
 end
 
-define :createEchauffSong do
-	initSong()
-	initRhythm(@RHYTHM)
-	10.times do
-		basePattern(count: 4)
-		variation
-		echauffement(count: [1,3,5,7].choose)
-	end
-	return song
-end
-
-define :createBaradasaSong do
-	initSong()
-	
-	initRhythm(@KON)
-	TRACKS["kenkenTrack"]["solo"] = 1
-	basePattern(count: 4)
-	TRACKS["kenkenTrack"]["solo"] = 0
-
-	8.times do
-		@RHYTHM = @KON;
-			basePattern(count: [2,4].choose); variation; echauffement(count: [2,4].choose);
-		@RHYTHM = @KON_MASI;
-			echauffement(count: 2);
-		@RHYTHM = @KON;
-			basePattern(count: 2); echauffement(count: 2);
-		@RHYTHM = @KON_MAJA;
-			basePattern(count: 1);
-		@RHYTHM = @KON;
-			echauffement_direct(count: [2,4].choose);
-		@RHYTHM = @BANDO_DJEI;
-			basePattern(count: [4,6,8].choose); variation; echauffement(count: [2,4].choose);
-		@RHYTHM = @BOLOKONONDO;
-			basePattern(count: [2,4].choose); variation; echauffement(count: 1);
-	end
-	return song
-end
-
-define :createKonSong do
-	initSong()
-	initRhythm(@KON)
-	
-	TRACKS["kenkenTrack"]["solo"] = 1
-	basePattern(count: 4)
-	TRACKS["kenkenTrack"]["solo"] = 0
-	
-	
-	8.times do
-		@RHYTHM = @KON;
-			basePattern(count: [2,4].choose); variation; echauffement(count: [2,4].choose);
-		@RHYTHM = @KON_MASI;
-			echauffement(count: 2);
-		@RHYTHM = @KON;
-			basePattern(count: 2); echauffement(count: 2);
-		@RHYTHM = @KON_MAJA;
-			basePattern(count: 1);
-		@RHYTHM = @KON;
-			echauffement_direct(count: [2,4].choose);
-	end
-	return song
-end
-
-
-define :playDirigent do
+define :playSongDirigent do
 #  cue :tick
   in_thread(name: :dirigent) do
     loop do
@@ -193,6 +132,16 @@ define :playDirigent do
   end
 end
 
-with_fx :reverb, room:0.2, damp:0.5 do
-	playSong(createBaradasaSong())
+@createEchauffSong = Proc.new do
+	initSong()
+	initRhythm(@RHYTHM)
+	10.times do
+		basePattern(count: [2,4].choose)
+		variation
+		echauffement(count: [4,6].choose)
+		#TRACKS["djembeTrack"]["mute"] = 1
+		#basePattern(count: 1)
+		#TRACKS["djembeTrack"]["mute"] = 0
+	end
+	@song
 end

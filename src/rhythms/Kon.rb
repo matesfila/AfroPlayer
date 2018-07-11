@@ -89,4 +89,56 @@
 	"dependencies" => {}
 }
 
+createKonSong = Proc.new do
+	initSong()
+	initRhythm(@KON)
+	
+	#TRACKS["kenkenTrack"]["solo"] = 1
+	#basePattern(count: 4)
+	#TRACKS["kenkenTrack"]["solo"] = 0
+	
+	
+	8.times do
+		@RHYTHM = @KON;
+			basePattern(count: [2,4].choose); variation; echauffement(count: [2,4].choose);
+		@RHYTHM = @KON_MASI;
+			echauffement(count: 2);
+		@RHYTHM = @KON;
+			basePattern(count: 2); echauffement(count: 2);
+		@RHYTHM = @KON_MAJA;
+			basePattern(count: 1);
+		@RHYTHM = @KON;
+			echauffement_direct(count: [2,4].choose);
+	end
+	@song
+end
+
+createBaradasaSong = Proc.new do
+	initSong()
+	initRhythm(@KON)
+	
+	TRACKS["kenkenTrack"]["solo"] = 1
+	basePattern(count: 4)
+	TRACKS["kenkenTrack"]["solo"] = 0
+
+	8.times do
+		@RHYTHM = @KON;
+			basePattern(count: [2,4].choose); variation; echauffement(count: [2,4].choose);
+		@RHYTHM = @KON_MASI;
+			echauffement(count: 2);
+		@RHYTHM = @KON;
+			basePattern(count: 2); echauffement(count: 2);
+		@RHYTHM = @KON_MAJA;
+			basePattern(count: 1);
+		@RHYTHM = @KON;
+			echauffement_direct(count: [2,4].choose);
+		@RHYTHM = @BANDO_DJEI;
+			basePattern(count: [4,6,8].choose); variation; echauffement(count: [2,4].choose);
+		@RHYTHM = @BOLOKONONDO;
+			basePattern(count: [2,4].choose); variation; echauffement(count: 1);
+	end
+	@song
+end
+
 @RHYTHM = @KON
+@CREATE_SONG = createBaradasaSong
