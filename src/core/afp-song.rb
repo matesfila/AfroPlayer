@@ -2,6 +2,10 @@
 # Engine skladanie konkretneho songu.
 ##################################################################
 
+@BASE_PATTERN_COUNT = [2]
+@PLAY_VARIATION = TRUE
+@ECHAUFF_PATTERN_COUNT = [2]
+
 @CREATE_SONG = nil
 
 define :addPattern do |patternType: "", song: {}|
@@ -136,9 +140,11 @@ end
 	initSong()
 	initRhythm(@RHYTHM)
 	10.times do
-		basePattern(count: [2,4].choose)
-		variation
-		echauffement(count: [4,6].choose)
+		basePattern(count: @BASE_PATTERN_COUNT.choose)
+		if @PLAY_VARIATION
+			variation;
+		end
+		echauffement(count: @ECHAUFF_PATTERN_COUNT.choose)
 		#TRACKS["djembeTrack"]["mute"] = 1
 		#basePattern(count: 1)
 		#TRACKS["djembeTrack"]["mute"] = 0

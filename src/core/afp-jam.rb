@@ -143,6 +143,11 @@ define :playDirigent do
 end
 
 initRhythm(@RHYTHM)
-with_fx :reverb, room:0.2, damp:0.5 do
+set_volume! 3
+if @OPTIMIZED
 	playLive()
+elsif
+	with_fx :reverb, room:0.2, damp:0.5 do
+		playLive()
+	end
 end

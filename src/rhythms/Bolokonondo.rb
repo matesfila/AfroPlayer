@@ -32,7 +32,8 @@ dun_var2 =  "b.bb.bb.bb.b|b.XX.X.XX.X.|" +
 		"dundun" => {
 			"base" => [dun_base],
 			"variations" => [dun_var1, dun_var2],
-			"echauff" => [".XX.XX.XX.XX"]
+			"echauff" => [".XX.XX.XX.XX|.XX.XX.XX.XX|.XX.XX.XX.XX|.XX.XX.XX.XX|.XX.XX.XX.XX|.XX.XX.XX.XX|.XX.XX.XX.XX"],
+			"echauff-out" => [dun_base]
 		},
 		"sangban" => {
 			"base" => [san_base],

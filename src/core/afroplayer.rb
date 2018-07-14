@@ -6,8 +6,9 @@
 ##################################################################
 
 HUMANIZE_TIME = 0.0133
-HUMANIZE_DYNAMIC = 0.4
+HUMANIZE_DYNAMIC = 0.07
 HUMANIZE_PITCH = 0.005
+@OPTIMIZED = FALSE #optimalizacia pre raspberry pi: vypnutie efektov a na procesor narocnejsich veci
 
 TRACKS = {
   #pre solo a mute: 0 = false, 1 = true, skrateny zapis
@@ -152,13 +153,17 @@ define :playSample do |instrument: {}, probability: 1|
 	
 	s = instrument["sample"].choose
 	if s != nil && rand <= probability
-		sample s,
-			amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
-			pan: instrument["pan"],
-			rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
-			attack: instrument["attack"],
-			sustain: instrument["sustain"],
-			release: instrument["release"]
+		if @OPTIMIZED
+			sample s
+		elsif
+			sample s,
+				amp: rand_around(instrument["amp"], HUMANIZE_DYNAMIC),
+				pan: instrument["pan"],
+				rate: rand_around(instrument["rate"], HUMANIZE_PITCH),
+				attack: instrument["attack"],
+				sustain: instrument["sustain"],
+				release: instrument["release"]
+		end
 		return true
 	else
 		return false
