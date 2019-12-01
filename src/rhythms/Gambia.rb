@@ -33,6 +33,9 @@
 				"....|....|xo.o|.oo.|xo.o|.oo.|xo..|xo..|"+
 				"xo.o|.oo.|xo.o|.oo.|xx..|xx..|xx..|xx..|"+
 				"xo.o|.oo.|xo.o|.oo.|xx..|....|xooooo|x.x.|"
+				"....|...x|ooxo|oxoo|xoox|ooxo|oxoo|x...|"+
+				"......|......|...ooo|x.x...|...ooo|x.x...|"+
+				"x.....|oooooo|......|......|......|......|""
 			],
 			"variations" => [],
 			"echauff" => ["oooxxxxx|xxxxxxxx"]
