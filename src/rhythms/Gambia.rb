@@ -24,18 +24,20 @@
 		},
 		"djembe" => {
 			"base" => [
-				"D.oo|.x..|..oo|.x..|D.oo|.x..|..oo|.x..|"+
-				"D.oo|.x..|..oo|.x..|D.oo|.x..|..oo|.x..|"+
 				"..xx|.o.o|....|....|...x|.x.x|....|....|"+
 				"..xx|.D.D|....|....|..xx|...x|.x..|....|"+
 				"..xx|.D.D|....|....|...x|.x.x|....|....|"+
 				"..xx|.D.D|....|....|xx..|xx..|xx..|x.x.|"+
 				"....|....|xo.o|.oo.|xo.o|.oo.|xo..|xo..|"+
 				"xo.o|.oo.|xo.o|.oo.|xx..|xx..|xx..|xx..|"+
-				"xo.o|.oo.|xo.o|.oo.|xx..|....|xooooo|x.x.|"
+				"xo.o|.oo.|xo.o|.oo.|xx..|....|xooooo|x.x.|"+
+				"D.oo|.x..|..oo|.x..|D.oo|.x..|..oo|.x..|"+
+				"D.oo|.x..|..oo|.x..|D.oo|.x..|..oo|.x..|"+
+				"D.oo|.x..|..oo|.x..|D.oo|.x..|..oo|.x..|"+
+				"D.oo|.x..|..oo|.x..|D.oo|.x..|..oo|.x..|"+
 				"....|...x|ooxo|oxoo|xoox|ooxo|oxoo|x...|"+
 				"......|......|...ooo|x.x...|...ooo|x.x...|"+
-				"x.....|oooooo|......|......|......|......|""
+				"x.....|oooooo|......|......|......|......|"+
 			],
 			"variations" => [],
 			"echauff" => ["oooxxxxx|xxxxxxxx"]
