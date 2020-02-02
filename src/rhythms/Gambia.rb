@@ -37,7 +37,7 @@
 				"D.oo|.x..|..oo|.x..|D.oo|.x..|..oo|.x..|"+
 				"....|...x|ooxo|oxoo|xoox|ooxo|oxoo|x...|"+
 				"......|......|...ooo|x.x...|...ooo|x.x...|"+
-				"x.....|oooooo|......|......|......|......|"+
+				"x.....|oooooo|......|......|......|......|"
 			],
 			"variations" => [],
 			"echauff" => ["oooxxxxx|xxxxxxxx"]
