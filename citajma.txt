@@ -4,6 +4,8 @@ Rozbehanie sonic-pi-cli
 - dať ruby do cesty PATH
 - spustiť príkaz gem install sonic-pi-cli (viď https://github.com/Widdershin/sonic-pi-cli)
 
+Poznamka: na najnovsom raspberry pi staci zadat prikaz "sudo gem install sonic-pi-cli" a funguje.
+
 Funguje OK.
 
 
