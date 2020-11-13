@@ -33,7 +33,6 @@ SAMPLES = {
     "kenclos" => {"sample" => multiSample("kenkeni_closed_v", 6), "amp" => 3, "rate" => 0.9, "pan" => 0.02},
     "dunbell" => {"sample" => multiSample("dundun_bell_open_v", 4), "amp" => 0.8, "rate" => 0.8, "pan" => -0.3},
     "sanbell" => {"sample" => multiSample("sangban_bell_open_v", 5), "amp" => 1, "rate" => 1, "pan" => 0.1},
-    #"sanbell" => {"sample" => [nil], "amp" => 0, "rate" => 0, "pan" => 0},
     "kenbell" => {"sample" => multiSample("kenkeni_bell_open_v", 3), "amp" => 1.3, "rate" => 1.2, "pan" => 0.02},
     "djbass" => {"sample" => [:dj_tm_bass], "amp" => 1, "rate" => 1, "pan" => 0},
     "djton" => {"sample" => multiSample("dj_tm_ton_v", 6), "amp" => 2, "rate" => 1, "pan" => 0},
@@ -53,11 +52,33 @@ SAMPLES = {
   }
   
   INSTRUMENTS = {
-      "dundun" => {"open" => SAMPLES["dundun"], "closed" => SAMPLES["dunclos"], "bell" => SAMPLES["dunbell"]},
-      "sangban" => {"open" => SAMPLES["sangban"], "closed" => SAMPLES["sanclos"], "bell" => SAMPLES["sanbell"]},
-      "kenken" => {"open" => SAMPLES["kenken"], "closed" => SAMPLES["kenclos"], "bell" => SAMPLES["kenbell"]},
-      "djembe" => {"bass" => SAMPLES["djbass"], "ton" => SAMPLES["djton"], "slap" => SAMPLES["djslap"], "closed" => SAMPLES["djclos"]},
-      "djembe2" => {"bass" => SAMPLES["dj2_bass"], "ton" => SAMPLES["dj2_ton"], "slap" => SAMPLES["dj2_slap"], "closed" => SAMPLES["dj2_clos"]},
+      "dundun" => {
+          "open" => SAMPLES["dundun"],
+          "closed" => SAMPLES["dunclos"],
+          "bell" => SAMPLES["dunbell"]
+        },
+      "sangban" => {
+          "open" => SAMPLES["sangban"],
+          "closed" => SAMPLES["sanclos"],
+          "bell" => SAMPLES["sanbell"]
+        },
+      "kenken" => {
+          "open" => SAMPLES["kenken"],
+          "closed" => SAMPLES["kenclos"],
+          "bell" => SAMPLES["kenbell"]
+        },
+      "djembe" => {
+          "bass" => SAMPLES["djbass"],
+          "ton" => SAMPLES["djton"],
+          "slap" => SAMPLES["djslap"],
+          "closed" => SAMPLES["djclos"]
+        },
+      "djembe2" => {
+          "bass" => SAMPLES["dj2_bass"],
+          "ton" => SAMPLES["dj2_ton"],
+          "slap" => SAMPLES["dj2_slap"],
+          "closed" => SAMPLES["dj2_clos"]
+        },
       "balafon" => {
           "g0" => SAMPLES["balafon_g0"],
           "a0" => SAMPLES["balafon_a0"],
@@ -69,7 +90,7 @@ SAMPLES = {
       }
   }
 
-  define :rand_around do |v,r|
+define :rand_around do |v,r|
 	return rrand(v-r, v+r)
 end
 
