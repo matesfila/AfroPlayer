@@ -108,7 +108,7 @@ define :playBar do |bar: "", instrumentName: ""|
 	if instrumentName == "balafon"
 		bar.split.each { |c|
 			puts "balafon #{c}"
-			smplr_playNote(note: c, instrument: INSTRUMENTS[instrumentName], instrumentName: instrumentName)
+			smplr_playNote(note: c, instrumentName: instrumentName)
 			sleep h
 			h = rrand(0, HUMANIZE_TIME)
 			#sleep @RHYTHM_TIME[0]* 1.0 / bar.length + @RHYTHM_SWING.tick - h
@@ -117,7 +117,7 @@ define :playBar do |bar: "", instrumentName: ""|
 		}
 	else
 		bar.each_char { |c|
-			smplr_playNote(note: c, instrument: INSTRUMENTS[instrumentName], instrumentName: instrumentName)
+			smplr_playNote(note: c, instrumentName: instrumentName)
 			sleep h
 			h = rrand(0, HUMANIZE_TIME)
 			#sleep @RHYTHM_TIME[0]* 1.0 / bar.length + @RHYTHM_SWING.tick - h
