@@ -6,10 +6,6 @@
 #že by mali byť dobre poučiť všetky zvuky, aby človek vedel hneď skontrolovať,
 #či naozaj všetko, čo má hrať, aj hrá.
 
-@BPM = 115
-@RHYTHM_TIME = [8,4] #osem štvrťový rytmus
-@RHYTHM_SWING = (ring 0,0,0,0)
-
 dun_base = "X.......|X......."
 san_base = "....X...|....X..."
 ken_base = "..X...X.|..X...X."
@@ -29,8 +25,8 @@ san_var3 = "...XXX..|....XXX."
 ken_var3 = "......XX|X......X"
 
 TESTRHYTHM = {
-	"BPM" => ,
-	"TIME_SIGNATURE" => [,],
+	"BPM" => 115,
+	"TIME_SIGNATURE" => [8,4],
 	"SWING" => (ring 0,0,0),
   "patterns" => {
     "dundun" => {

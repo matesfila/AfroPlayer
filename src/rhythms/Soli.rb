@@ -77,23 +77,23 @@ dun_var3 = "X.bb.bX.XX.X"
 
 
 createSolibaSong = Proc.new do
-	initSong()
-	initRhythm(@SOLI)
+	song_initialize()
+	seqn_initialize(@SOLI)
 	
 	#TRACKS["kenkenTrack"]["solo"] = 1
-	#basePattern(count: 4)
+	#song_basePattern(count: 4)
 	#TRACKS["kenkenTrack"]["solo"] = 0
 
 	8.times do
 		@RHYTHM = @SOLI;
-			basePattern(count: [2,4].choose);
+			song_basePattern(count: [2,4].choose);
 			#variation;
-			echauffement(count: [2,4].choose);
+			song_echauffement(count: [2,4].choose);
 		@RHYTHM = @SOLI_MASI;
-			echauffement(count: 2);
+			song_echauffement(count: 2);
 	end
 	@song
 end
 
 @RHYTHM = @SOLI
-@CREATE_SONG = createSolibaSong
+@CREATE_SONG_FUNC = createSolibaSong

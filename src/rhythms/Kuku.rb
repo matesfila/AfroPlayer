@@ -8,7 +8,7 @@
 @KUKU = {
 	"BPM" => 110,
 	"TIME_SIGNATURE" => [8,4],
-	"SWING" => (ring 0,0,0),
+	"SWING" => (ring 0.1,-0.1,0.1,-0.1),
 	"patterns" => {
 		"dundun" => {
 			"base" => Array.new(12, "b.bX.bb.|b.b.B.b.") + ["bX.X.bb.|b.b.B.b."],

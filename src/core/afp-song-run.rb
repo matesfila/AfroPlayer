@@ -1,14 +1,14 @@
 
-if @CREATE_SONG == nil
-	@CREATE_SONG = @createEchauffSong
+if @CREATE_SONG_FUNC == nil
+	@CREATE_SONG_FUNC = @createEchauffSong
 end
 
 set_volume! 3
 
 if @OPTIMIZED
-	playSong(@CREATE_SONG.call())
+	song_play(@CREATE_SONG_FUNC.call())
 elsif
 	with_fx :reverb, room:0.2, damp:0.5 do
-		playSong(@CREATE_SONG.call())
+		song_play(@CREATE_SONG_FUNC.call())
 	end
 end

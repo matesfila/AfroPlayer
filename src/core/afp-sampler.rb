@@ -100,7 +100,7 @@ define :rand_around do |v,r|
 end
 
 define :playSample do |sample: {}, probability: 1|
-	use_bpm @BPM
+	use_bpm @RHYTHM["BPM"]
 	
 	s = sample["sample"].choose
 	if s != nil && rand <= probability

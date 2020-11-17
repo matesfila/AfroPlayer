@@ -4,32 +4,32 @@
 
 
 #dĺžka základného cyklu: na konci každého základného cyklu sa zahrá variácia
-@VARCYCLE_LEN = [4]
+JAM_VARIATION_CYCLE_LENGTH = [8]
 #či sa variácie vyberajú náhodne, alebo v poradí, v akom sú definované
-@VAR_RANDOMSELECT = false
+JAM_VARIATION_RANDOMSELECT = false
 #minimálne koľkokrát sa zvolená variácia zopakuje
-@VAR_MINREPEAT = 1
+JAM_VARIATION_MINREPEAT = 1
 #maximálne koľkokrát sa zvolená variácia zopakuje
-@VAR_MAXREPEAT = 2
+JAM_VARIATION_MAXREPEAT = 2
 
-#@BREAK_CYCLELEN = [16]
-#@RANDOM_BREAKS = false
-#@BREAK_MINREPEAT = 1
-#@BREAK_MAXREPEAT = 1
+#BREAK_CYCLELEN = [16]
+#RANDOM_BREAKS = false
+#BREAK_MINREPEAT = 1
+#BREAK_MAXREPEAT = 1
 
-#@VARCYCLE_LEN ||= [4]
+#JAM_VARIATION_CYCLE_LENGTH ||= [4]
 
-# Globálna premenná orders. Ukladajú sa do nej komunikačné príkazy medzi
+# Premenná orders. Ukladajú sa do nej komunikačné príkazy medzi
 # jednotlivými threadmi reprezentujúcimi konkrétny hudobný nástroj.
 # Príklad: dundun ide zahrať variáciu X, ku ktorej sangban má hrať variácu Y,
 # a tak dundun zadá cez premennú order príkaz sangbanu, aby zahral Y.
 orders = {}
 
-# Globálna premenná varcycle_len určuje pre všetky nástroje aktuálnu dĺžku
+# Premenná varcycle_len určuje pre všetky nástroje aktuálnu dĺžku
 # cyklu pre variáciu.
-varcycle_len = @VARCYCLE_LEN.choose
+varcycle_len = JAM_VARIATION_CYCLE_LENGTH.choose
 
-define :playLiveTrack do |trackName, rhythm, instrumentName|
+define :jam_playTrackLive do |trackName, rhythm, instrumentName|
 
   #Vráti index variácie, ktorá sa má hrať a aktualizuje frontu variationsToPlay ak treba.
   define :selectVariation do |variations, variationsToPlay, lastVariation|
@@ -38,7 +38,7 @@ define :playLiveTrack do |trackName, rhythm, instrumentName|
       #ak je zoznam variácie na hranie už prázdny, tak sa naplní
       if variationsToPlay.empty?
         varToPlay = nil #variácia, ktorá sa bude pridávať do variationsToPlay (index)
-        if @VAR_RANDOMSELECT
+        if JAM_VARIATION_RANDOMSELECT
           if (variations.size == 1)
             variation = nil #v nasl sa teda nebude hrat variacia
             varToPlay = 0
@@ -51,7 +51,7 @@ define :playLiveTrack do |trackName, rhythm, instrumentName|
         else
           varToPlay = ((lastVariation || -1) + 1) % variations.size
         end
-        rrand_i(@VAR_MINREPEAT, @VAR_MAXREPEAT).times do
+        rrand_i(JAM_VARIATION_MINREPEAT, JAM_VARIATION_MAXREPEAT).times do
           variationsToPlay << varToPlay
         end
       end
@@ -96,7 +96,7 @@ define :playLiveTrack do |trackName, rhythm, instrumentName|
         #Podmienky funkčnosti tohto algoritmu:
         # - variácia nemôže byť menšia ako velkosť base patternu
         # - basePatterns musia mat vsetky rovnaku velkost
-        x = patternSize(variation) / patternSize(basePatterns[0])
+        x = seqn_patternSize(variation) / seqn_patternSize(basePatterns[0])
       end
 
       #základný pattern sa zahrá príslušný počet krát
@@ -104,7 +104,7 @@ define :playLiveTrack do |trackName, rhythm, instrumentName|
         #existuje príkaz? Dodrž
         #výber pattern
         #existuje závislosť? Vytvor príkaz
-        playPattern(pattern: basePatterns.choose, instrumentName: instrumentName)
+        seqn_playPattern(pattern: basePatterns.choose, instrumentName: instrumentName)
       end
 
       #a na záver cyklu sa zahrá variácia
@@ -116,38 +116,38 @@ define :playLiveTrack do |trackName, rhythm, instrumentName|
           orders.delete(instrumentName)
         end
 
-        playPattern(pattern: variation, instrumentName: instrumentName)
+        seqn_playPattern(pattern: variation, instrumentName: instrumentName)
       end
     end
   end
 end
 
-define :playLive do
-	getTracksToPlay(TRACKS).each do |track, trackProperties|
-		playLiveTrack(track, @RHYTHM, trackProperties["instrumentName"])
+define :jam_playAllLive do
+	seqn_tracksToPlay(TRACKS).each do |track, trackProperties|
+		jam_playTrackLive(track, @RHYTHM, trackProperties["instrumentName"])
 	end
-	playDirigent
+	jam_playDirigent
 end
 
-define :playDirigent do
+define :jam_playDirigent do
 #  cue :tick
   in_thread(name: :dirigent) do
     loop do
-      varcycle_len = @VARCYCLE_LEN.choose
-      use_bpm @BPM
+      varcycle_len = JAM_VARIATION_CYCLE_LENGTH.choose
+      use_bpm @RHYTHM["BPM"]
       #sample  :drum_cymbal_closed #metronom
       cue :tick
-      sleep @DELAY * @RHYTHM_TIME[0] + HUMANIZE_TIME + 0.025
+      sleep @DELAY * @RHYTHM["TIME_SIGNATURE"][0] + HUMANIZE_TIME + 0.025
     end
   end
 end
 
-initRhythm(@RHYTHM)
+seqn_initialize(@RHYTHM)
 set_volume! 3
 if @OPTIMIZED
-	playLive()
+	jam_playAllLive()
 elsif
 	with_fx :reverb, room:0.2, damp:0.5 do
-		playLive()
+		jam_playAllLive()
 	end
 end

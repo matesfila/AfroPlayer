@@ -90,55 +90,55 @@
 }
 
 createKonSong = Proc.new do
-	initSong()
-	initRhythm(@KON)
+	song_initialize()
+	seqn_initialize(@KON)
 	
 	#TRACKS["kenkenTrack"]["solo"] = 1
-	#basePattern(count: 4)
+	#song_basePattern(count: 4)
 	#TRACKS["kenkenTrack"]["solo"] = 0
 	
 	
 	8.times do
 		@RHYTHM = @KON;
-			basePattern(count: @BASE_PATTERN_COUNT.choose); variation; echauffement(count: @ECHAUFF_PATTERN_COUNT.choose);
+			song_basePattern(count: @BASE_PATTERN_COUNT.choose); variation; song_echauffement(count: @ECHAUFF_PATTERN_COUNT.choose);
 		@RHYTHM = @KON_MASI;
-			echauffement(count: 2);
+			song_echauffement(count: 2);
 		@RHYTHM = @KON;
-			basePattern(count: @BASE_PATTERN_COUNT.choose); echauffement(count: @ECHAUFF_PATTERN_COUNT.choose);
+			song_basePattern(count: @BASE_PATTERN_COUNT.choose); song_echauffement(count: @ECHAUFF_PATTERN_COUNT.choose);
 		@RHYTHM = @KON_MAJA;
-			basePattern(count: 1);
+			song_basePattern(count: 1);
 		@RHYTHM = @KON;
-			echauffement_direct(count: @ECHAUFF_PATTERN_COUNT.choose);
+			song_echauffementDirect(count: @ECHAUFF_PATTERN_COUNT.choose);
 	end
 	@song
 end
 
 createBaradasaSong = Proc.new do
-	initSong()
-	initRhythm(@KON)
+	song_initialize()
+	seqn_initialize(@KON)
 	
 	TRACKS["kenkenTrack"]["solo"] = 1
-	basePattern(count: 4)
+	song_basePattern(count: 4)
 	TRACKS["kenkenTrack"]["solo"] = 0
 
 	8.times do
 		@RHYTHM = @KON;
-			basePattern(count: @BASE_PATTERN_COUNT.choose); variation; echauffement(count: @ECHAUFF_PATTERN_COUNT.choose);
+			song_basePattern(count: @BASE_PATTERN_COUNT.choose); variation; song_echauffement(count: @ECHAUFF_PATTERN_COUNT.choose);
 		@RHYTHM = @KON_MASI;
-			echauffement(count: 2);
+			song_echauffement(count: 2);
 		@RHYTHM = @KON;
-			basePattern(count: 2); echauffement(count: 2);
+			song_basePattern(count: 2); song_echauffement(count: 2);
 		@RHYTHM = @KON_MAJA;
-			basePattern(count: 1);
+			song_basePattern(count: 1);
 		@RHYTHM = @KON;
-			echauffement_direct(count: [2,4].choose);
+			song_echauffementDirect(count: [2,4].choose);
 		@RHYTHM = @BANDO_DJEI;
-			basePattern(count: @BASE_PATTERN_COUNT.choose); variation; echauffement(count: @ECHAUFF_PATTERN_COUNT.choose);
+			song_basePattern(count: @BASE_PATTERN_COUNT.choose); variation; song_echauffement(count: @ECHAUFF_PATTERN_COUNT.choose);
 		@RHYTHM = @BOLOKONONDO;
-			basePattern(count: @BASE_PATTERN_COUNT.choose / 2); variation; echauffement(count: @ECHAUFF_PATTERN_COUNT.choose / 2);
+			song_basePattern(count: @BASE_PATTERN_COUNT.choose / 2); variation; song_echauffement(count: @ECHAUFF_PATTERN_COUNT.choose / 2);
 	end
 	@song
 end
 
 @RHYTHM = @KON
-@CREATE_SONG = createKonSong
+@CREATE_SONG_FUNC = createBaradasaSong

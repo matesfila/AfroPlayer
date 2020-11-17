@@ -6,9 +6,9 @@
 @PLAY_VARIATION = TRUE
 @ECHAUFF_PATTERN_COUNT = [2]
 
-@CREATE_SONG = nil
+@CREATE_SONG_FUNC = nil
 
-define :addPattern do |patternType: "", song: {}|
+define :song_addPattern do |patternType: "", song: {}|
 
 	define :choosePattern do |instrument: "", patternType: ""|
 
@@ -55,9 +55,9 @@ define :addPattern do |patternType: "", song: {}|
 	end
 	
 	maxBarCount = 0 #zároveň sa odpamätá dĺžka najdlhšie patternu, ktorý sa pridal do fronty
-	getTracksToPlay(TRACKS).each do |trackName, trackProperties|
+	seqn_tracksToPlay(TRACKS).each do |trackName, trackProperties|
 		pattern = choosePattern(instrument: trackProperties["instrumentName"], patternType: patternType)
-		patternBarCount = barCount(pattern)
+		patternBarCount = seqn_barCount(pattern)
 		patternsToAdd[trackName] = pattern
 		if patternBarCount > maxBarCount
 			maxBarCount = patternBarCount
@@ -68,7 +68,7 @@ define :addPattern do |patternType: "", song: {}|
 	#sa zarovnali na najdlší pattern.
 	TRACKS.each do |trackName, trackProperties|
 		pattern = patternsToAdd[trackName]
-		if barCount(pattern) == 1
+		if seqn_barCount(pattern) == 1
 			maxBarCount.times do
 				song[trackName] << patternsToAdd[trackName]
 			end
@@ -79,74 +79,74 @@ define :addPattern do |patternType: "", song: {}|
 
 end
 
-define :playSong do |song|
+define :song_play do |song|
 
 	define :playSongTrack do |trackName, trackLine|
 		in_thread(name: trackName) do
 			while !trackLine.empty? do
-				playPattern(pattern: trackLine.pop, instrumentName: TRACKS[trackName]["instrumentName"])
+				seqn_playPattern(pattern: trackLine.pop, instrumentName: TRACKS[trackName]["instrumentName"])
 			end
 		end
 	end
 
-	getTracksToPlay(TRACKS).each do |trackName, trackProperties|
+	seqn_tracksToPlay(TRACKS).each do |trackName, trackProperties|
 		playSongTrack(trackName, song[trackName])
 	end
 	
-	playSongDirigent
+	song_playDirigent
 end
 
 @song = {}
 
-define :basePattern do |count: 1|
-	count.times do addPattern(patternType: "base", song: @song) end
+define :song_basePattern do |count: 1|
+	count.times do song_addPattern(patternType: "base", song: @song) end
 end
 
 define :variation do
-	addPattern(patternType: "variations", song: @song)
+	song_addPattern(patternType: "variations", song: @song)
 end
 
-define :echauffement do |count: 1|
-	addPattern(patternType: "echauff-in", song: @song)
-	count.times do addPattern(patternType: "echauff", song: @song) end
-	addPattern(patternType: "echauff-out", song: @song)
+define :song_echauffement do |count: 1|
+	song_addPattern(patternType: "echauff-in", song: @song)
+	count.times do song_addPattern(patternType: "echauff", song: @song) end
+	song_addPattern(patternType: "echauff-out", song: @song)
 end
 
-define :echauffement_direct do |count: 1|
-	count.times do addPattern(patternType: "echauff", song: @song) end
-	addPattern(patternType: "echauff-out", song: @song)
+define :song_echauffementDirect do |count: 1|
+	count.times do song_addPattern(patternType: "echauff", song: @song) end
+	song_addPattern(patternType: "echauff-out", song: @song)
 end
 
-define :initSong do
+define :song_initialize do
 	@song = {}
 	TRACKS.each do |trackName, trackProperties|
 		@song[trackName] = Queue.new
 	end
 end
 
-define :playSongDirigent do
+define :song_playDirigent do
 #  cue :tick
   in_thread(name: :dirigent) do
     loop do
-      use_bpm @BPM
+      use_bpm @RHYTHM["BPM"]
       #sample  :drum_cymbal_closed #metronom
       cue :tick
-      sleep @DELAY * @RHYTHM_TIME[0] + HUMANIZE_TIME + 0.025
+      sleep @DELAY * @RHYTHM["TIME_SIGNATURE"][0] + HUMANIZE_TIME + 0.025
     end
   end
 end
 
 @createEchauffSong = Proc.new do
-	initSong()
-	initRhythm(@RHYTHM)
+	song_initialize()
+	seqn_initialize(@RHYTHM)
 	10.times do
-		basePattern(count: @BASE_PATTERN_COUNT.choose)
+		song_basePattern(count: @BASE_PATTERN_COUNT.choose)
 		if @PLAY_VARIATION
 			variation;
 		end
-		echauffement(count: @ECHAUFF_PATTERN_COUNT.choose)
+		song_echauffement(count: @ECHAUFF_PATTERN_COUNT.choose)
 		#TRACKS["djembeTrack"]["mute"] = 1
-		#basePattern(count: 1)
+		#song_basePattern(count: 1)
 		#TRACKS["djembeTrack"]["mute"] = 0
 	end
 	@song

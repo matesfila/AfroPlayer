@@ -48,11 +48,6 @@ TRACKS = {
 #   "dependencies" => {}
 # }
 
-# Nastavenie defaultných hodnôt pre globálne premenné
-@BPM ||= 95
-@RHYTHM_TIME ||= [4,4]
-@RHYTHM_SWING ||= (ring 0,0,0,0)
-
 #regulárny výraz na hodnotu patternu, príklad: "kenken: x.b.x.b.|x.b.x.b."
 #RGXP_PATTERN = /^(\w+):\s+([\.\|bXABCDEFIixyzopq]+)$/
 
@@ -77,7 +72,6 @@ define :countNoteDelay do |note|
 end
 
 
-
 # Rozparsuje vstupný pattern, ktorý je na vstupe v surovom stave.
 # +return+ Vráti mapu s kľúčmi instrumentName a pattern
 # define :patternParse do |pattern|
@@ -85,11 +79,11 @@ end
 #   return {"instrumentName" => m[1], "pattern" => m[2]}
 # end
 
-define :patternSize do |pattern|
+define :seqn_patternSize do |pattern|
 	return pattern.delete("|").length()
 end
 
-define :barCount do |pattern|
+define :seqn_barCount do |pattern|
 	count = 1
 	pattern.each_char { |c|
 		if c == "|"
@@ -99,9 +93,9 @@ define :barCount do |pattern|
 	return count
 end
 
-define :playBar do |bar: "", instrumentName: ""|
+define :seqn_playBar do |bar: "", instrumentName: ""|
 
-	use_bpm @BPM
+	use_bpm @RHYTHM["BPM"]
 	h = 0
 	sync :tick
 
@@ -111,50 +105,47 @@ define :playBar do |bar: "", instrumentName: ""|
 			smplr_playNote(note: c, instrumentName: instrumentName)
 			sleep h
 			h = rrand(0, HUMANIZE_TIME)
-			#sleep @RHYTHM_TIME[0]* 1.0 / bar.length + @RHYTHM_SWING.tick - h
-			sleep @DELAY * (1.0*@RHYTHM_TIME[0] / bar.split.length) + @RHYTHM_SWING.tick - h
-			#sleep @DELAY + @RHYTHM_SWING.tick - h
+			#sleep @RHYTHM["TIME_SIGNATURE"][0]* 1.0 / bar.length + @RHYTHM["SWING"].tick - h
+			sleep @DELAY * (1.0*@RHYTHM["TIME_SIGNATURE"][0] / bar.split.length) + @RHYTHM["SWING"].tick - h
+			#sleep @DELAY + @RHYTHM["SWING"].tick - h
 		}
 	else
 		bar.each_char { |c|
 			smplr_playNote(note: c, instrumentName: instrumentName)
 			sleep h
 			h = rrand(0, HUMANIZE_TIME)
-			#sleep @RHYTHM_TIME[0]* 1.0 / bar.length + @RHYTHM_SWING.tick - h
-			sleep @DELAY * (1.0*@RHYTHM_TIME[0] / bar.length) + @RHYTHM_SWING.tick - h
-			#sleep @DELAY + @RHYTHM_SWING.tick - h
+			#sleep @RHYTHM["TIME_SIGNATURE"][0]* 1.0 / bar.length + @RHYTHM["SWING"].tick - h
+			sleep @DELAY * (1.0*@RHYTHM["TIME_SIGNATURE"][0] / bar.length) + @RHYTHM["SWING"].tick - h
+			#sleep @DELAY + @RHYTHM["SWING"].tick - h
 		}
 	end
 end
 
-define :playPattern do |pattern: "", instrumentName: ""|
+define :seqn_playPattern do |pattern: "", instrumentName: ""|
 	#pattern = patternParse(pattern)
 	pattern.split(/\|/).each do |b|
-		playBar(bar: b, instrumentName: instrumentName)
+		seqn_playBar(bar: b, instrumentName: instrumentName)
 	end
 end
 
-#getTracksToPlay vrati zoznam trackov so zohladnenim parametrov solo a mute
-define :getTracksToPlay do |tracks|
+#seqn_tracksToPlay vrati zoznam trackov so zohladnenim parametrov solo a mute
+define :seqn_tracksToPlay do |tracks|
 	soloTracks = tracks.select{|t| tracks[t]["solo"] == 1}
 	tracksToPlay = (soloTracks.size > 0 ? soloTracks : tracks).select{|t| tracks[t]["mute"] == 0}
 end
 
-define :initRhythm do |rhythm|
+define :seqn_initialize do |rhythm|
 	@RHYTHM = rhythm
-	@BPM = rhythm["BPM"]
-	@RHYTHM_TIME = rhythm["TIME_SIGNATURE"]
-	@RHYTHM_SWING = rhythm["SWING"]
-	@DELAY = countNoteDelay(@RHYTHM_TIME[0])
+	@DELAY = countNoteDelay(@RHYTHM["TIME_SIGNATURE"][0])
 end
 
 # prehrá všetky patterny zadané v mape patterns
 # patterns je mapa prvkov instrumentName -> pattern
-#define :playPatterns do |patterns: {}|
+#define :seqn_playPatterns do |patterns: {}|
 #	patterns.each do |instrumentName, pattern|
 #		puts instrumentName + " => " + pattern
 #		in_thread() do
-#			playPattern(pattern: pattern, instrumentName: instrumentName)
+#			seqn_playPattern(pattern: pattern, instrumentName: instrumentName)
 #			cue :p
 #		end
 #	end
@@ -163,3 +154,6 @@ end
 #		#sync :tick
 #	end
 #end
+
+
+seqn_playPattern(pattern: ["X.X.X.X.X.X.X.X"], instrumentName: "sangban")
